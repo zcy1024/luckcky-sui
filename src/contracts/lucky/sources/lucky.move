@@ -66,6 +66,11 @@ public struct LuckyPool has key {
     ended: bool
 }
 
+public struct LuckyPoolCreated has copy, drop {
+    pool_id: ID,
+    time: String
+}
+
 public struct WinnersEvent has copy, drop {
     pool_id: ID,
     winners_list: String,
@@ -86,8 +91,14 @@ public fun create_pool(
     ctx: &mut TxContext
 ): LuckyPool {
     assert!(minimum_participants > 0 && number_of_winners > 0 && (allows_multiple_awards || number_of_winners <= minimum_participants), E_Not_Valid_Basic_Pool_Info);
+    let id = object::new(ctx);
+    let pool_id = id.to_inner();
+    emit(LuckyPoolCreated {
+        pool_id,
+        time: creation_time
+    });
     LuckyPool {
-        id: object::new(ctx),
+        id,
         name,
         description,
         creation_time,

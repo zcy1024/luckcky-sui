@@ -19,9 +19,9 @@ const {networkConfig, useNetworkVariable, useNetworkVariables} = createNetworkCo
     testnet: {
         url: getFullnodeUrl("testnet"),
         variables: {
-            Package: "0x531675e16d9b3b946a5fafdacaaa123b337884d415a128edaf45c3ac015ec7d0",
-            Publisher: "0x04207f9507a75c03ea39ee3611746f086239df53c9a2799a2395c59f35b47ab7",
-            UpgradeCap: "0x1a267d4b282af55ec74033cf2fc54d1e869c578ff1c0365f72d13b49a353dd18"
+            Package: "0x2652b2eee932906d41b413ddb6151b1c6991602a224efd72879b5c05a86c0bbc",
+            Publisher: "0x6e7ad6d466677fa4a2a605c8d562dae6534236489f1a0e224426de7670cd3add",
+            UpgradeCap: "0x3617cbb55260484a9a6f67030a5fb8af3906441498e9d8972cc77fa4d706ff01"
         }
     }
 });
