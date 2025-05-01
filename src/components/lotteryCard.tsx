@@ -10,7 +10,10 @@ export default function LotteryCard() {
                 <p className="flex-1 pt-3 pb-1 w-2/3 text-xs text-wrap">
                     Description
                 </p>
-                <span className="text-xs text-[#afb3b5]">2025-05-01 22:22:22</span>
+                <div className="flex gap-2 items-center text-xs text-[#afb3b5]">
+                    <span><b>ObjectID</b>: 0x665e...ad80</span>
+                    <span><b>Time</b>: 2025-05-01 22:22:22</span>
+                </div>
             </div>
             <div className="flex flex-col justify-end items-center gap-1 h-full">
                 <span>number of winners: <b>100</b></span>
