@@ -1,6 +1,6 @@
 'use client'
 
-import {LotteryCard, Navigation} from "@/components";
+import {CreateLottery, LotteryCard, Navigation} from "@/components";
 import {useDispatch} from "react-redux";
 import {AppDispatch} from "@/store";
 import {useEffect, useState} from "react";
@@ -8,7 +8,6 @@ import {refreshAll} from "@/store/modules/info";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {Input} from "@/components/ui/input";
 import {Search} from "lucide-react";
-import {Button} from "@/components/ui/button";
 
 export default function Home() {
     const dispatch = useDispatch<AppDispatch>();
@@ -36,7 +35,9 @@ export default function Home() {
                                     <Input type="text" placeholder="ObjectID" size={50} onChange={(e) => setObjectID(e.target.value)} />
                                     <Search size={24} className="cursor-pointer text-[#afb3b5] active:text-[#196ae3]" onClick={handleSearch} />
                                 </div>
-                                <Button variant="outline" className="absolute bottom-1 right-1 cursor-pointer">Create Lottery</Button>
+                                <div className="absolute bottom-1 right-1">
+                                    <CreateLottery />
+                                </div>
                             </div>
                             <LotteryCard />
                         </div>
