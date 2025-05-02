@@ -57,7 +57,7 @@ const formSchemaObj = {
 
 const formSchema = z.object(formSchemaObj)
     .refine(obj => obj["Repeat Award"] || obj["Minimum Amount"] >= obj.Winners, {
-        message: "Must satisfy `Minimum Amount` >= `Winners`", path: ["Minimum Amount"]
+        message: "`Minimum` >= `Winners` or `Repeat Award`", path: ["Minimum Amount"]
     })
 ;
 
