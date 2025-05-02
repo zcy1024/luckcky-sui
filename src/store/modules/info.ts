@@ -4,18 +4,22 @@ import {createSlice, ThunkDispatch, UnknownAction} from "@reduxjs/toolkit";
 import {Dispatch} from "react";
 import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
 import {getPasskeyProvider} from "@/configs/networkConfig";
-import {getBalance} from "@/lib/contracts";
+import {getBalance, getPoolInfo, PoolInfoType} from "@/lib/contracts";
 
 export type initialStateType = {
     address: string,
     balance: string,
     publicKeyStr: string,
+    poolInfos: PoolInfoType[],
+    endedPoolInfos: PoolInfoType[]
 }
 
 const initialState: initialStateType = {
     address: "",
     balance: "0",
     publicKeyStr: "",
+    poolInfos: [],
+    endedPoolInfos: []
 }
 
 const infoStore = createSlice({
@@ -30,6 +34,10 @@ const infoStore = createSlice({
         },
         setPublicKeyStr(state, action: {payload: string}) {
             state.publicKeyStr = action.payload;
+        },
+        setPoolInfos(state, action: {payload: [PoolInfoType[], PoolInfoType[]]}) {
+            state.poolInfos = action.payload[0];
+            state.endedPoolInfos = action.payload[1];
         }
     }
 });
@@ -44,11 +52,13 @@ const refreshAll = (publicKeyStr: string | null | undefined) => {
             dispatch(setAddress(keypair.toSuiAddress()));
             dispatch(setBalance(await getBalance(keypair.toSuiAddress())));
             dispatch(setPublicKeyStr(publicKeyStr));
+            dispatch(setPoolInfos(await getPoolInfo()));
             return;
         }
         dispatch(setAddress(""));
         dispatch(setBalance("0"));
         dispatch(setPublicKeyStr(""));
+        dispatch(setPoolInfos([[], []]));
     }
 }
 
@@ -60,21 +70,32 @@ const refreshBalance = (owner: string) => {
     }
 }
 
+const refreshPoolInfos = () => {
+    return async (dispatch: ThunkDispatch<{
+        info: initialStateType
+    }, undefined, UnknownAction> & Dispatch<UnknownAction>) => {
+        dispatch(setPoolInfos(await getPoolInfo()));
+    }
+}
+
 const {
     setAddress,
     setBalance,
     setPublicKeyStr,
+    setPoolInfos,
 } = infoStore.actions;
 
 export {
     setAddress,
     setBalance,
     setPublicKeyStr,
+    setPoolInfos,
 };
 
 export {
     refreshAll,
     refreshBalance,
+    refreshPoolInfos,
 };
 
 export default infoStore.reducer;

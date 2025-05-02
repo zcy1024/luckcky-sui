@@ -2,7 +2,7 @@
 
 import {CreateLottery, LotteryCard, Navigation} from "@/components";
 import {useDispatch} from "react-redux";
-import {AppDispatch} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
 import {useEffect, useState} from "react";
 import {refreshAll} from "@/store/modules/info";
 import {ScrollArea} from "@/components/ui/scroll-area";
@@ -10,6 +10,8 @@ import {Input} from "@/components/ui/input";
 import {Search} from "lucide-react";
 
 export default function Home() {
+    const poolInfos = useAppSelector(state => state.info.poolInfos);
+    const endedPoolInfos = useAppSelector(state => state.info.endedPoolInfos);
     const dispatch = useDispatch<AppDispatch>();
     useEffect(() => {
         dispatch(refreshAll(localStorage.getItem("PublicKey")));
@@ -20,6 +22,8 @@ export default function Home() {
         if (!objectID)
             return;
         console.log(objectID);
+        console.log(poolInfos);
+        console.log(endedPoolInfos);
     }
 
     return (
