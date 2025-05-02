@@ -2,6 +2,7 @@
 
 import {Button} from "@/components/ui/button";
 import {PoolInfoType} from "@/lib/contracts";
+import {Apply} from "@/components";
 
 export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: boolean}) {
     return (
@@ -23,7 +24,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
                 <span>repeat winnings allowed: <b>{info.allowsMultipleAwards ? "true" : "false"}</b></span>
             </div>
             <div className="flex flex-col justify-end items-end gap-1 h-full">
-                <Button variant="outline" className="cursor-pointer">Apply to join</Button>
+                <Apply name={info.name} objectID={info.id} fields={info.fields} />
                 <Button variant="outline" className="cursor-pointer">View Application</Button>
                 <Button variant="outline" className="cursor-pointer">View Participants</Button>
             </div>

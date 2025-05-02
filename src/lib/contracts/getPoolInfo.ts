@@ -3,6 +3,11 @@
 import {network, networkConfig, suiClient} from "@/configs/networkConfig";
 import {EventId} from "@mysten/sui/client";
 
+type InitFieldType = {
+    field: string,
+    encryption: boolean
+}
+
 type InitPoolInfoType = {
     fields: {
         id: {
@@ -15,16 +20,18 @@ type InitPoolInfoType = {
         number_of_winners: string,
         allows_multiple_awards: boolean,
         fields: {
-            fields: {
-                field: string,
-                encryption: boolean
-            }
+            fields: InitFieldType
         }[],
         application: [],
         pool: [],
         confirmed: [],
         ended: boolean
     }
+}
+
+export type FieldType = {
+    fieldName: string,
+    needEncryption: boolean
 }
 
 export type PoolInfoType = {
@@ -35,10 +42,7 @@ export type PoolInfoType = {
     minimumParticipants: number,
     numberOfWinners: number,
     allowsMultipleAwards: boolean,
-    fields: {
-        fieldName: string,
-        needEncryption: boolean
-    }[],
+    fields: FieldType[],
     application: [],
     pool: [],
     confirmed: [],
@@ -79,6 +83,10 @@ async function getPool(id: string): Promise<PoolInfoType> {
                 fieldName: item.fields.field,
                 needEncryption: item.fields.encryption
             };
+        }).sort((field1, field2) => {
+            if (field1.needEncryption !== field2.needEncryption)
+                return field1.needEncryption ? 1 : -1;
+            return field1.fieldName < field2.fieldName ? -1 : 1;
         }),
         application: [],
         pool: [],
