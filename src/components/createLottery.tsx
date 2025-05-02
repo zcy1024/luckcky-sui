@@ -29,6 +29,10 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {ChangeEvent, useState} from "react";
 import {Label} from "@/components/ui/label";
 import {CheckedState} from "@radix-ui/react-checkbox";
+import {createPoolTx} from "@/lib/contracts";
+import {useAppSelector} from "@/store";
+import {getPasskeyProvider, suiClient} from "@/configs/networkConfig";
+import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
 
 // ------ basic info ------
 const formSchemaObj = {
@@ -154,9 +158,36 @@ export default function CreateLottery() {
         );
     }
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values);
-        console.log(fields);
+    // transaction
+    const account = useAppSelector(state => state.info.address);
+    const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (!account || !publicKeyStr)
+            return;
+        const curTime = new Date().getTime().toString();
+        const fieldsArray = [fields["0"], fields["1"], fields["2"], fields["3"], fields["4"]].filter(field => field.field.length > 0);
+        const tx = createPoolTx({
+            name: values.Name,
+            description: values.Description,
+            creationTime: curTime,
+            minimumParticipants: values["Minimum Amount"],
+            numberOfWinners: values.Winners,
+            allowsMultipleAwards: values["Repeat Award"] ? values["Repeat Award"] : false,
+            fields: fieldsArray.map(field => field.field),
+            encryption: fieldsArray.map(field => field.encryption),
+            sender: account
+        });
+        const publicKey = new Uint8Array(publicKeyStr.split(',').map(item => Number(item)));
+        const passkeyProvider = getPasskeyProvider(window.location.hostname);
+        const keypair = new PasskeyKeypair(publicKey, passkeyProvider);
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        // TODO: refresh main page
     }
 
     return (

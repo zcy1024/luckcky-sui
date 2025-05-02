@@ -9,11 +9,13 @@ import {getBalance} from "@/lib/contracts";
 export type initialStateType = {
     address: string,
     balance: string,
+    publicKeyStr: string,
 }
 
 const initialState: initialStateType = {
     address: "",
     balance: "0",
+    publicKeyStr: "",
 }
 
 const infoStore = createSlice({
@@ -25,6 +27,9 @@ const infoStore = createSlice({
         },
         setBalance(state, action: {payload: string}) {
             state.balance = action.payload;
+        },
+        setPublicKeyStr(state, action: {payload: string}) {
+            state.publicKeyStr = action.payload;
         }
     }
 });
@@ -38,10 +43,12 @@ const refreshAll = (publicKeyStr: string | null | undefined) => {
             const keypair = new PasskeyKeypair(publicKey, getPasskeyProvider(window.location.hostname));
             dispatch(setAddress(keypair.toSuiAddress()));
             dispatch(setBalance(await getBalance(keypair.toSuiAddress())));
+            dispatch(setPublicKeyStr(publicKeyStr));
             return;
         }
         dispatch(setAddress(""));
         dispatch(setBalance("0"));
+        dispatch(setPublicKeyStr(""));
     }
 }
 
@@ -56,11 +63,13 @@ const refreshBalance = (owner: string) => {
 const {
     setAddress,
     setBalance,
+    setPublicKeyStr,
 } = infoStore.actions;
 
 export {
     setAddress,
     setBalance,
+    setPublicKeyStr,
 };
 
 export {

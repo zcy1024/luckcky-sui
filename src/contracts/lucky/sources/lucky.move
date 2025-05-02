@@ -115,10 +115,10 @@ public fun create_pool(
     }
 }
 
-public fun edit_fields(pool: &mut LuckyPool, mut fields: vector<String>, mut encryption: vector<bool>, ctx: &TxContext) {
+public fun edit_fields(mut pool: LuckyPool, mut fields: vector<String>, mut encryption: vector<bool>, ctx: &TxContext) {
     assert!(pool.admins.contains(&ctx.sender()), E_Not_Admin);
     assert!(pool.fields.length() == 0 && pool.application.length() == 0 && pool.pool.length() == 0, E_Can_Not_Edit_Fields);
-    assert!(fields.length() > 0 && fields.length() <= 5 && fields.length() == encryption.length(), E_Not_Valid_Fields);
+    assert!(fields.length() >= 0 && fields.length() <= 5 && fields.length() == encryption.length(), E_Not_Valid_Fields);
     assert!(!pool.ended, E_Ended_Pool);
     while (!fields.is_empty()) {
         let field = fields.pop_back();
@@ -130,6 +130,7 @@ public fun edit_fields(pool: &mut LuckyPool, mut fields: vector<String>, mut enc
     };
     fields.destroy_empty();
     encryption.destroy_empty();
+    transfer::share_object(pool);
 }
 
 fun check_fields(fields: &vector<Field>, keys: &vector<String>): bool {
