@@ -26,7 +26,11 @@ import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Plus} from "lucide-react";
 import {ScrollArea} from "@/components/ui/scroll-area";
+import {ChangeEvent, useState} from "react";
+import {Label} from "@/components/ui/label";
+import {CheckedState} from "@radix-ui/react-checkbox";
 
+// ------ basic info ------
 const formSchemaObj = {
     Name: z.string().min(1, {
         message: "Name is required."
@@ -53,7 +57,45 @@ const formSchema = z.object(formSchemaObj)
     })
 ;
 
+// ------ fields that require user to fill in ------
+type FieldType = {
+    field: string,
+    encryption: boolean
+}
+
+type FieldsType = {
+    0: FieldType,
+    1: FieldType,
+    2: FieldType,
+    3: FieldType,
+    4: FieldType,
+}
+
+const initialFields: FieldsType = {
+    0: {
+        field: "",
+        encryption: false,
+    },
+    1: {
+        field: "",
+        encryption: false,
+    },
+    2: {
+        field: "",
+        encryption: false,
+    },
+    3: {
+        field: "",
+        encryption: false,
+    },
+    4: {
+        field: "",
+        encryption: false,
+    }
+}
+
 export default function CreateLottery() {
+    // basic info
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -64,8 +106,57 @@ export default function CreateLottery() {
             "Repeat Award": false
         }
     });
+
+    // fields that require user to fill in
+    const [fieldCount, setFieldCount] = useState<number>(0);
+    const [fields, setFields] = useState<FieldsType>(initialFields);
+
+    const renderFields = () => {
+        const handleChangeInput = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+            const oldField = fields[index.toString() as "0" | "1" | "2" | "3" | "4"];
+            setFields({
+                ...fields,
+                [index]: {
+                    field: e.target.value,
+                    encryption: oldField.encryption
+                }
+            });
+        }
+        const handleCheckedChange = (state: CheckedState, index: number) => {
+            const oldField = fields[index.toString() as "0" | "1" | "2" | "3" | "4"];
+            setFields({
+                ...fields,
+                [index]: {
+                    field: oldField.field,
+                    encryption: state
+                }
+            });
+        }
+        return (
+            <>
+                {
+                    Array(fieldCount).fill(null).map((_, index) => {
+                        return (
+                            <div className="flex flex-col gap-2 items-start" key={index}>
+                                <div className="flex flex-col gap-2 items-start">
+                                    <Label>{`Info Field ${index + 1}`}</Label>
+                                    <Input placeholder="Field Name" size={36} maxLength={20} onChange={(e) => handleChangeInput(e, index)} />
+                                </div>
+                                <div className="flex gap-3 items-start">
+                                    <Label>{`Encrypt Info ${index + 1}`}</Label>
+                                    <Checkbox className="cursor-pointer" onCheckedChange={(state => handleCheckedChange(state, index))} />
+                                </div>
+                            </div>
+                        );
+                    })
+                }
+            </>
+        );
+    }
+
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log(values);
+        console.log(fields);
     }
 
     return (
@@ -136,7 +227,7 @@ export default function CreateLottery() {
                             name="Minimum Amount"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Minimum Amount:</FormLabel>
+                                    <FormLabel>Minimum Amount</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Minimum Number Of Participants" {...field} size={36} />
                                     </FormControl>
@@ -153,9 +244,9 @@ export default function CreateLottery() {
                             render={({ field }) => (
                                 <FormItem>
                                     <div className="flex gap-3 items-center">
-                                        <FormLabel>Repeat Award:</FormLabel>
+                                        <FormLabel>Repeat Award</FormLabel>
                                         <FormControl>
-                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} className="cursor-pointer" />
                                         </FormControl>
                                     </div>
                                     <FormDescription className="w-76">
@@ -165,7 +256,18 @@ export default function CreateLottery() {
                                 </FormItem>
                             )}
                         />
-                        <Plus size={28} className="border-2 border-[#041f4b] rounded-full font-bold text-[#afb3b5] hover:text-[#35a1f7] active:text-[#196ae3] cursor-pointer" />
+                        {
+                            renderFields()
+                        }
+                        {
+                            fieldCount > 0 &&
+                            <Label className="text-xs text-[#737373] -mt-3">If you no longer need some fields, leave them empty.</Label>
+                        }
+                        {
+                            fieldCount >= 0 && fieldCount < 5 &&
+                            <Plus size={28} className="border-2 border-[#041f4b] rounded-full font-bold text-[#afb3b5] hover:text-[#35a1f7] active:text-[#196ae3] cursor-pointer"
+                                  onClick={() => setFieldCount(fieldCount + 1 <= 5 ? fieldCount + 1 : 5)} />
+                        }
                         <DialogFooter className="self-end items-center">
                             <Button variant="default" type="submit" className="cursor-pointer">Create</Button>
                         </DialogFooter>
