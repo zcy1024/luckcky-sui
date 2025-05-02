@@ -25,6 +25,7 @@ import {
 import {Input} from "@/components/ui/input";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Plus} from "lucide-react";
+import {ScrollArea} from "@/components/ui/scroll-area";
 
 const formSchemaObj = {
     Name: z.string().min(1, {
@@ -72,7 +73,7 @@ export default function CreateLottery() {
             <DialogTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">Create Lottery</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="h-[45rem] overflow-y-scroll">
                 <Form {...form}>
                     <DialogHeader>
                         <DialogTitle>Create Lottery</DialogTitle>
@@ -80,6 +81,7 @@ export default function CreateLottery() {
                             You will serve as the initial administrator, creating a brand new draw.
                         </DialogDescription>
                     </DialogHeader>
+                    <ScrollArea>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5 items-center">
                         <FormField
                             control={form.control}
@@ -168,6 +170,7 @@ export default function CreateLottery() {
                             <Button variant="default" type="submit" className="cursor-pointer">Create</Button>
                         </DialogFooter>
                     </form>
+                    </ScrollArea>
                 </Form>
             </DialogContent>
         </Dialog>
