@@ -11,7 +11,8 @@ export type initialStateType = {
     balance: string,
     publicKeyStr: string,
     poolInfos: PoolInfoType[],
-    endedPoolInfos: PoolInfoType[]
+    endedPoolInfos: PoolInfoType[],
+    navTab: string,
 }
 
 const initialState: initialStateType = {
@@ -19,7 +20,8 @@ const initialState: initialStateType = {
     balance: "0",
     publicKeyStr: "",
     poolInfos: [],
-    endedPoolInfos: []
+    endedPoolInfos: [],
+    navTab: "Main"
 }
 
 const infoStore = createSlice({
@@ -38,7 +40,10 @@ const infoStore = createSlice({
         setPoolInfos(state, action: {payload: [PoolInfoType[], PoolInfoType[]]}) {
             state.poolInfos = action.payload[0];
             state.endedPoolInfos = action.payload[1];
-        }
+        },
+        setNavTab(state, action: {payload: string}) {
+            state.navTab = action.payload;
+        },
     }
 });
 
@@ -83,6 +88,7 @@ const {
     setBalance,
     setPublicKeyStr,
     setPoolInfos,
+    setNavTab,
 } = infoStore.actions;
 
 export {
@@ -90,6 +96,7 @@ export {
     setBalance,
     setPublicKeyStr,
     setPoolInfos,
+    setNavTab,
 };
 
 export {

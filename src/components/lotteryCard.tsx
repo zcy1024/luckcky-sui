@@ -1,27 +1,28 @@
 'use client'
 
 import {Button} from "@/components/ui/button";
+import {PoolInfoType} from "@/lib/contracts";
 
-export default function LotteryCard() {
+export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: boolean}) {
     return (
-        <div className="flex gap-10 items-center h-36 w-full p-2 bg-[#fff] rounded-xl border-2 hover:border-[#196ae3]">
+        <div className={"flex gap-10 items-center h-36 w-full p-2 rounded-xl border-2 " + (isOdd ? "bg-[#fff] hover:border-[#196ae3]" : "bg-[#f9f9f9] hover:border-[#35a1f7]")}>
             <div className="flex-1 flex flex-col items-start h-full">
-                <h2 className="text-2xl font-bold subpixel-antialiased tracking-wider">Lottery Name</h2>
+                <h2 className="text-2xl font-bold subpixel-antialiased tracking-wider">{info.name}</h2>
                 <p className="flex-1 pt-3 pb-1 w-2/3 text-xs text-wrap">
-                    Description
+                    {info.description}
                 </p>
                 <div className="flex gap-2 items-center text-xs text-[#afb3b5]">
-                    <span><b>ObjectID</b>: 0x665e...ad80</span>
-                    <span><b>Time</b>: 2025-05-01 22:22:22</span>
+                    <span><b>ObjectID</b>: {info.id.slice(0, 6) + "..." + info.id.slice(-4)}</span>
+                    <span><b>Time</b>: {info.creationTime}</span>
                 </div>
             </div>
-            <div className="flex flex-col justify-end items-center gap-1 h-full">
-                <span>number of winners: <b>100</b></span>
-                <span>repeat winnings allowed: <b>true</b></span>
-                <span>current number of participants: <b>100</b></span>
-                <span>minimum number of participants: <b>100</b></span>
+            <div className="flex flex-col justify-end items-start gap-1 h-full">
+                <span>number of winners: <b>{info.numberOfWinners}</b></span>
+                <span>minimum participants: <b>{info.minimumParticipants}</b></span>
+                <span>current participants: <b>100</b></span>
+                <span>repeat winnings allowed: <b>{info.allowsMultipleAwards ? "true" : "false"}</b></span>
             </div>
-            <div className="flex flex-col justify-end items-center gap-1 h-full">
+            <div className="flex flex-col justify-end items-end gap-1 h-full">
                 <Button variant="outline" className="cursor-pointer">Apply to join</Button>
                 <Button variant="outline" className="cursor-pointer">View Application</Button>
                 <Button variant="outline" className="cursor-pointer">View Participants</Button>
