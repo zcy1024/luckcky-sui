@@ -23,8 +23,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {useState} from "react";
 import {Checkbox} from "@/components/ui/checkbox";
+import {Plus} from "lucide-react";
 
 const formSchemaObj = {
     Name: z.string().min(1, {
@@ -46,12 +46,14 @@ const formSchemaObj = {
     "Repeat Award": z.boolean().default(false).optional(),
 };
 
-export default function CreateLottery() {
-    const [formSchema, setFormSchema] = useState(z.object(formSchemaObj)
-        .refine(obj => obj["Minimum Amount"] >= obj.Winners, {
+const formSchema = z.object(formSchemaObj)
+    .refine(obj => obj["Minimum Amount"] >= obj.Winners, {
         message: "Must satisfy `Minimum Amount` >= `Winners`", path: ["Minimum Amount"]
-    }));
-    const [form, setForm] = useState(useForm<z.infer<typeof formSchema>>({
+    })
+;
+
+export default function CreateLottery() {
+    const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             Name: "",
@@ -60,7 +62,7 @@ export default function CreateLottery() {
             "Minimum Amount": 1,
             "Repeat Award": false
         }
-    }));
+    });
     const onSubmit = (values: z.infer<typeof formSchema>) => {
         console.log(values);
     }
@@ -161,6 +163,7 @@ export default function CreateLottery() {
                                 </FormItem>
                             )}
                         />
+                        <Plus size={28} className="border-2 border-[#041f4b] rounded-full font-bold text-[#afb3b5] hover:text-[#35a1f7] active:text-[#196ae3] cursor-pointer" />
                         <DialogFooter className="self-end items-center">
                             <Button variant="default" type="submit" className="cursor-pointer">Create</Button>
                         </DialogFooter>
