@@ -48,7 +48,8 @@ export default function Apply({name, objectID, fields}: {name: string, objectID:
             return;
         }
         const encryptedValues = await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]));
-        await decrypt(publicKeyStr, objectID, fields, encryptedValues);
+        const decryptedValues = await decrypt(publicKeyStr, objectID, fields, encryptedValues);
+        console.log(decryptedValues);
         // const tx = applyTx({
         //     poolID: objectID,
         //     addrAndTime: account + (new Date().getTime().toString()),

@@ -26,7 +26,7 @@
       "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
         "@mysten/dapp-kit": "^0.16.2",
-        "@mysten/seal": "^0.4.2",
+        "@mysten/seal": "^0.3.5",
         "@mysten/sui": "^1.29.1",
         "@reduxjs/toolkit": "^2.7.0",
         "@tailwindcss/postcss": "^4.1.5",
@@ -144,11 +144,11 @@
 
     "@modelcontextprotocol/sdk": ["@modelcontextprotocol/sdk@1.11.0", "", { "dependencies": { "content-type": "^1.0.5", "cors": "^2.8.5", "cross-spawn": "^7.0.3", "eventsource": "^3.0.2", "express": "^5.0.1", "express-rate-limit": "^7.5.0", "pkce-challenge": "^5.0.0", "raw-body": "^3.0.0", "zod": "^3.23.8", "zod-to-json-schema": "^3.24.1" } }, "sha512-k/1pb70eD638anoi0e8wUGAlbMJXyvdV4p62Ko+EZ7eBe1xMx8Uhak1R5DgfoofsK5IBBnRwsYGTaLZl+6/+RQ=="],
 
-    "@mysten/bcs": ["@mysten/bcs@1.6.1", "", { "dependencies": { "@mysten/utils": "0.0.0", "@scure/base": "^1.2.4" } }, "sha512-pywsl2+jxbib5CbteAjMpmJpnj1pcUco2ff+lXCK3hfppPbkyWEMbZDQn1jNngV6ADQ3IFIvPs0FaS7fKWPOLA=="],
+    "@mysten/bcs": ["@mysten/bcs@1.6.0", "", { "dependencies": { "@scure/base": "^1.2.4" } }, "sha512-ydDRYdIkIFCpHCcPvAkMC91fVwumjzbTgjqds0KsphDQI3jUlH3jFG5lfYNTmV6V3pkhOiRk1fupLBcsQsiszg=="],
 
     "@mysten/dapp-kit": ["@mysten/dapp-kit@0.16.2", "", { "dependencies": { "@mysten/slush-wallet": "0.1.2", "@mysten/sui": "1.29.1", "@mysten/utils": "0.0.0", "@mysten/wallet-standard": "0.14.9", "@radix-ui/react-dialog": "^1.1.6", "@radix-ui/react-dropdown-menu": "^2.1.6", "@radix-ui/react-slot": "^1.1.2", "@vanilla-extract/css": "^1.17.1", "@vanilla-extract/dynamic": "^2.1.1", "@vanilla-extract/recipes": "^0.5.3", "clsx": "^2.1.1", "zustand": "^4.5.4" }, "peerDependencies": { "@tanstack/react-query": "^5.0.0", "react": "*" } }, "sha512-DF2S+9zcfr8XH/a0Xydftbt4LjCfaBHBbDFTans/Hy52u2iSjJgph/lAfSDxkrvdumbJ0V2JJfWIqE1lDBdRtw=="],
 
-    "@mysten/seal": ["@mysten/seal@0.4.2", "", { "dependencies": { "@mysten/bcs": "1.6.1", "@mysten/sui": "1.29.1", "@noble/curves": "^1.8.1", "@noble/hashes": "^1.7.1", "shamir-secret-sharing": "0.0.3" } }, "sha512-KmNNN94wosVe1EnZnfv3BPe34qxdqXcHMHqecU1cRz2BkP5SgRrC+SIxzmwmvuhXU8qZkuV2lsFOQBpdAFTgJQ=="],
+    "@mysten/seal": ["@mysten/seal@0.3.9", "", { "dependencies": { "@mysten/bcs": "1.6.0", "@mysten/sui": "1.28.1", "@noble/curves": "^1.8.1", "@noble/hashes": "^1.7.1", "shamir-secret-sharing": "0.0.3" } }, "sha512-kLmqw5lxtje5ahxJIRUfZfeDDnMW1LjFn+sEsqQ4pxHPUkdvpHfRSDCzey9EftKdwP4l7RSTnKENaddblmI0oA=="],
 
     "@mysten/slush-wallet": ["@mysten/slush-wallet@0.1.2", "", { "dependencies": { "@mysten/sui": "1.29.1", "@mysten/utils": "0.0.0", "@mysten/wallet-standard": "0.14.9", "@mysten/window-wallet-core": "0.0.2", "mitt": "^3.0.1", "valibot": "^0.36.0" } }, "sha512-V2PNXASXcD2b+K4PTw1eeUtkGS9VvyQdc8qMn4aZfQv1qTP2TkTVbqZX5cL4nj5kDzw/Pif8De4tCIV0qAErzw=="],
 
@@ -1117,6 +1117,10 @@
     "@eslint-community/eslint-utils/eslint-visitor-keys": ["eslint-visitor-keys@3.4.3", "", {}, "sha512-wpc+LXeiyiisxPlEkUzU6svyS1frIO3Mgxj1fdy7Pm8Ygzguax2N3Fa/D/ag1WqbOprdI+uY6wMUl8/a2G+iag=="],
 
     "@humanfs/node/@humanwhocodes/retry": ["@humanwhocodes/retry@0.3.1", "", {}, "sha512-JBxkERygn7Bv/GbN5Rv8Ul6LVknS+5Bp6RgDC/O8gEBU/yeH5Ui5C/OlWrTb6qct7LjjfT6Re2NxB0ln0yYybA=="],
+
+    "@mysten/seal/@mysten/sui": ["@mysten/sui@1.28.1", "", { "dependencies": { "@graphql-typed-document-node/core": "^3.2.0", "@mysten/bcs": "1.6.0", "@mysten/utils": "0.0.0", "@noble/curves": "^1.8.1", "@noble/hashes": "^1.7.1", "@scure/base": "^1.2.4", "@scure/bip32": "^1.6.2", "@scure/bip39": "^1.5.4", "gql.tada": "^1.8.2", "graphql": "^16.9.0", "poseidon-lite": "^0.2.0", "valibot": "^0.36.0" } }, "sha512-kvrcUKiC/92N4u3Ncb8j1uLeBhCjrnTZyBjIX0zNTukFFCMbZkDYEr9IVjPrvnOEwOXZ3fpYmpmw3LB9dEU5FA=="],
+
+    "@mysten/sui/@mysten/bcs": ["@mysten/bcs@1.6.1", "", { "dependencies": { "@mysten/utils": "0.0.0", "@scure/base": "^1.2.4" } }, "sha512-pywsl2+jxbib5CbteAjMpmJpnj1pcUco2ff+lXCK3hfppPbkyWEMbZDQn1jNngV6ADQ3IFIvPs0FaS7fKWPOLA=="],
 
     "@tailwindcss/oxide-wasm32-wasi/@emnapi/core": ["@emnapi/core@1.4.3", "", { "dependencies": { "@emnapi/wasi-threads": "1.0.2", "tslib": "^2.4.0" }, "bundled": true }, "sha512-4m62DuCE07lw01soJwPiBGC0nAww0Q+RY70VZ+n49yDIO13yyinhbWCeNnaob0lakDtWQzSdtNWzJeOJt2ma+g=="],
 
