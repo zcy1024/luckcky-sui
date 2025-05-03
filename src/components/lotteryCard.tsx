@@ -2,11 +2,11 @@
 
 import {Button} from "@/components/ui/button";
 import {PoolInfoType} from "@/lib/contracts";
-import {Apply} from "@/components";
+import {Apply, ViewApplication} from "@/components";
 
 export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: boolean}) {
     return (
-        <div className={"flex gap-10 items-center h-36 w-full p-2 rounded-xl border-2 " + (isOdd ? "bg-[#fff] hover:border-[#196ae3]" : "bg-[#f9f9f9] hover:border-[#35a1f7]")}>
+        <div className={"flex gap-10 items-center h-36 w-full p-2 rounded-xl border-2 " + (!isOdd ? "bg-[#fff] hover:border-[#196ae3]" : "bg-[#f9f9f9] hover:border-[#35a1f7]")}>
             <div className="flex-1 flex flex-col items-start h-full">
                 <h2 className="text-2xl font-bold subpixel-antialiased tracking-wider">{info.name}</h2>
                 <p className="flex-1 pt-3 pb-1 w-2/3 text-xs text-wrap">
@@ -25,7 +25,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
             </div>
             <div className="flex flex-col justify-end items-end gap-1 h-full">
                 <Apply name={info.name} objectID={info.id} fields={info.fields} />
-                <Button variant="outline" className="cursor-pointer">View Application</Button>
+                <ViewApplication name={info.name} objectID={info.id} fields={info.fields} applications={info.application} />
                 <Button variant="outline" className="cursor-pointer">View Participants</Button>
             </div>
         </div>

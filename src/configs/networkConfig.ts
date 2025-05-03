@@ -58,6 +58,7 @@ function getPasskeyKeypair(rpId: string, publicKeyStr: string) {
 }
 
 const sealClient = new SealClient({
+    // @ts-expect-error: Type error due to software package issues
     suiClient,
     serverObjectIds: getAllowlistedKeyServers(network),
     verifyKeyServers: false,

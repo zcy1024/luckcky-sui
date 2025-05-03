@@ -4,3 +4,7 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function timeExchange(time: string | number) {
+  return new Date(Number(time)).toLocaleString().replaceAll('/', '-');
+}

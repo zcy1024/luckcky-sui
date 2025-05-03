@@ -2,6 +2,7 @@
 
 import {network, networkConfig, suiClient} from "@/configs/networkConfig";
 import {EventId} from "@mysten/sui/client";
+import {timeExchange} from "@/lib/utils";
 
 type InitFieldType = {
     field: string,
@@ -22,16 +23,50 @@ type InitPoolInfoType = {
         fields: {
             fields: InitFieldType
         }[],
-        application: [],
+        application: {
+            fields: {
+                id: {
+                    id: string
+                }
+            }
+        },
         pool: [],
         confirmed: [],
         ended: boolean
     }
 }
 
+type InitFieldContentType = {
+    fields: {
+        key: string,
+        value: string
+    }
+}
+
+type InitFieldInfoType = {
+    fields: {
+        value: {
+            fields: {
+                fields: {
+                    fields: {
+                        contents: InitFieldContentType[]
+                    }
+                }
+            }
+        }
+    }
+}
+
 export type FieldType = {
     fieldName: string,
     needEncryption: boolean
+}
+
+export type FieldInfoType = {
+    index: number,
+    keys: string[],
+    values: string[],
+    sender: string
 }
 
 export type PoolInfoType = {
@@ -43,8 +78,8 @@ export type PoolInfoType = {
     numberOfWinners: number,
     allowsMultipleAwards: boolean,
     fields: FieldType[],
-    application: [],
-    pool: [],
+    application: FieldInfoType[],
+    pool: FieldInfoType[],
     confirmed: [],
     ended: boolean
 }
@@ -62,6 +97,39 @@ async function getPoolIDs(cursor: EventId | null | undefined): Promise<string[]>
     return !data.hasNextPage ? ids : ids.concat(await getPoolIDs(data.nextCursor));
 }
 
+async function getFieldInfo(id: string): Promise<[string[], string[]]> {
+    const data = await suiClient.getObject({
+        id,
+        options: {
+            showContent: true
+        }
+    });
+    return [
+        (data.data?.content as unknown as InitFieldInfoType).fields.value.fields.fields.fields.contents.map(item => item.fields.key),
+        (data.data?.content as unknown as InitFieldInfoType).fields.value.fields.fields.fields.contents.map(item => item.fields.value)
+    ];
+}
+
+async function getTableFields(parentId: string, cursor: string | null | undefined): Promise<FieldInfoType[]> {
+    const data = await suiClient.getDynamicFields({
+        parentId,
+        cursor
+    });
+    const temp: FieldInfoType[] = [];
+    for (let i = 0; i < data.data.length; i++) {
+        const item = data.data[i];
+        const indexStr = item.name.value as string;
+        const [keys, values] = await getFieldInfo(item.objectId);
+        temp.push({
+            index: indexStr.length > 1 && indexStr[1] === "x" ? Number(indexStr.slice(66)) : Number(indexStr),
+            keys,
+            values,
+            sender: indexStr.length > 1 && indexStr[1] === "x" ? indexStr.slice(0, 66) : ""
+        });
+    }
+    return !data.hasNextPage ? temp : temp.concat(await getTableFields(parentId, data.nextCursor));
+}
+
 async function getPool(id: string): Promise<PoolInfoType> {
     const data = await suiClient.getObject({
         id,
@@ -74,7 +142,7 @@ async function getPool(id: string): Promise<PoolInfoType> {
         id: initInfo.fields.id.id,
         name: initInfo.fields.name,
         description: initInfo.fields.description,
-        creationTime: new Date(Number(initInfo.fields.creation_time)).toLocaleString().replaceAll('/', '-'),
+        creationTime: timeExchange(initInfo.fields.creation_time),
         minimumParticipants: Number(initInfo.fields.minimum_participants),
         numberOfWinners: Number(initInfo.fields.number_of_winners),
         allowsMultipleAwards: initInfo.fields.allows_multiple_awards,
@@ -88,7 +156,7 @@ async function getPool(id: string): Promise<PoolInfoType> {
                 return field1.needEncryption ? 1 : -1;
             return field1.fieldName < field2.fieldName ? -1 : 1;
         }),
-        application: [],
+        application: (await getTableFields(initInfo.fields.application.fields.id.id, null)).sort((field1, field2) => field1.index > field2.index ? -1 : 1),
         pool: [],
         confirmed: [],
         ended: initInfo.fields.ended
