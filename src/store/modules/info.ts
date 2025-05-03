@@ -63,7 +63,7 @@ const refreshAll = (publicKeyStr: string | null | undefined) => {
         dispatch(setAddress(""));
         dispatch(setBalance("0"));
         dispatch(setPublicKeyStr(""));
-        dispatch(setPoolInfos([[], []]));
+        dispatch(setPoolInfos(await getPoolInfo()));
     }
 }
 
