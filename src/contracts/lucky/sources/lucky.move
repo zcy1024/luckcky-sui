@@ -5,6 +5,7 @@ use sui::event::emit;
 use sui::package::{Self, Publisher};
 use sui::random::Random;
 use sui::table::{Self, Table};
+use sui::vec_map::{Self, VecMap};
 
 const E_Not_Valid_Basic_Pool_Info: u64 = 0;
 const E_Not_Admin: u64 = 1;
@@ -25,8 +26,7 @@ public struct Field has copy, drop, store {
 }
 
 public struct Info has copy, drop, store {
-    keys: vector<String>,
-    values: vector<String>,
+    fields: VecMap<String, String>,
     // If win the prize repeatedly, the prize will be postponed
     // `next` is used to quickly find the target
     next: u64
@@ -147,26 +147,29 @@ fun check_fields(fields: &vector<Field>, keys: &vector<String>): bool {
     return true
 }
 
-entry fun apply(pool: &mut LuckyPool, addr_timer: String, keys: vector<String>, values: vector<String>) {
+entry fun apply(pool: &mut LuckyPool, addr_timer: String, mut keys: vector<String>, mut values: vector<String>) {
     assert!(check_fields(&pool.fields, &keys) && keys.length() == values.length(), E_Not_Valid_Fields);
     assert!(!pool.ended, E_Ended_Pool);
-    pool.application.add(addr_timer, Info {
-        keys,
-        values,
+    let mut info = Info {
+        fields: vec_map::empty<String, String>(),
         next: 0
-    });
+    };
+    while (!keys.is_empty()) {
+        info.fields.insert(keys.pop_back(), values.pop_back());
+    };
+    pool.application.add(addr_timer, info);
+    keys.destroy_empty();
+    values.destroy_empty();
 }
 
 fun add_to_pool(pool: &mut LuckyPool, info: Info) {
     let index = pool.index;
     let Info {
-        keys,
-        values,
+        fields,
         next: _
     } = info;
     pool.pool.add(index, Info {
-        keys,
-        values,
+        fields,
         next: index
     });
     pool.index = pool.index + 1;
@@ -181,13 +184,19 @@ entry fun approve(pool: &mut LuckyPool, mut keys: vector<String>, ctx: &TxContex
     };
 }
 
-entry fun edit_info(pool: &mut LuckyPool, index: u64, keys: vector<String>, values: vector<String>, ctx: &TxContext) {
+entry fun edit_info(pool: &mut LuckyPool, index: u64, mut keys: vector<String>, mut values: vector<String>, ctx: &TxContext) {
     assert!(check_fields(&pool.fields, &keys) && keys.length() == values.length(), E_Not_Valid_Fields);
     assert!(pool.admins.contains(&ctx.sender()), E_Not_Admin);
     assert!(!pool.ended, E_Ended_Pool);
     let info = &mut pool.pool[index];
-    info.keys = keys;
-    info.values = values;
+    while (!keys.is_empty()) {
+        let key = keys.pop_back();
+        let value = values.pop_back();
+        let old_value = &mut info.fields[&key];
+        *old_value = value;
+    };
+    keys.destroy_empty();
+    values.destroy_empty();
 }
 
 entry fun add_admin(pool: &mut LuckyPool, mut addresses: vector<address>, ctx: &TxContext) {

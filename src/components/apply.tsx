@@ -13,11 +13,9 @@ import {
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ChangeEvent, useState} from "react";
-import {applyTx, decrypt, encrypt, FieldType} from "@/lib/contracts";
+import {applyTx, encrypt, FieldType} from "@/lib/contracts";
 import {useAppSelector} from "@/store";
-// import {useAppSelector} from "@/store";
-// import {getPasskeyProvider, suiClient} from "@/configs/networkConfig";
-// import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
+import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 
 export default function Apply({name, objectID, fields}: {name: string, objectID: string, fields: FieldType[]}) {
     const account = useAppSelector(state => state.info.address);
@@ -47,15 +45,20 @@ export default function Apply({name, objectID, fields}: {name: string, objectID:
             setError(true);
             return;
         }
-        const encryptedValues = await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]));
-        const decryptedValues = await decrypt(publicKeyStr, objectID, fields, encryptedValues);
-        console.log(decryptedValues);
-        // const tx = applyTx({
-        //     poolID: objectID,
-        //     addrAndTime: account + (new Date().getTime().toString()),
-        //     fields,
-        //     values: fields.map(field => contents[field.fieldName])
-        // });
+        const tx = applyTx({
+            poolID: objectID,
+            addrAndTime: account + (new Date().getTime().toString()),
+            keys: fields.map(field => field.fieldName),
+            values: await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]))
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
     }
 
     return (

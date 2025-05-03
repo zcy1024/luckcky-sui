@@ -30,8 +30,10 @@ import {ChangeEvent, useState} from "react";
 import {Label} from "@/components/ui/label";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {createPoolTx} from "@/lib/contracts";
-import {useAppSelector} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
+import {useDispatch} from "react-redux";
+import {refreshPoolInfos} from "@/store/modules/info";
 
 // ------ basic info ------
 const formSchemaObj = {
@@ -160,6 +162,7 @@ export default function CreateLottery() {
     // transaction
     const account = useAppSelector(state => state.info.address);
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const dispatch = useDispatch<AppDispatch>();
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (!account || !publicKeyStr)
             return;
@@ -184,7 +187,7 @@ export default function CreateLottery() {
         await suiClient.waitForTransaction({
             digest: res.digest
         });
-        // TODO: refresh main page
+        dispatch(refreshPoolInfos());
     }
 
     return (
