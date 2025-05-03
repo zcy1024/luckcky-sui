@@ -13,12 +13,15 @@ import {
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ChangeEvent, useState} from "react";
-import {FieldType} from "@/lib/contracts";
+import {applyTx, decrypt, encrypt, FieldType} from "@/lib/contracts";
+import {useAppSelector} from "@/store";
 // import {useAppSelector} from "@/store";
 // import {getPasskeyProvider, suiClient} from "@/configs/networkConfig";
 // import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
 
 export default function Apply({name, objectID, fields}: {name: string, objectID: string, fields: FieldType[]}) {
+    const account = useAppSelector(state => state.info.address);
+    const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
     const [contents, setContents] = useState<{
         [key: string]: string
     }>({});
@@ -30,17 +33,28 @@ export default function Apply({name, objectID, fields}: {name: string, objectID:
             [fields[index].fieldName]: e.target.value
         });
     }
+
     const checkEmpty = () => {
         for (const field of fields)
             if (!contents[field.fieldName])
                 return false;
         return true;
     }
-    const handleApply = () => {
+    const handleApply = async () => {
+        if (!account)
+            return;
         if (!checkEmpty()) {
             setError(true);
             return;
         }
+        const encryptedValues = await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]));
+        await decrypt(publicKeyStr, objectID, fields, encryptedValues);
+        // const tx = applyTx({
+        //     poolID: objectID,
+        //     addrAndTime: account + (new Date().getTime().toString()),
+        //     fields,
+        //     values: fields.map(field => contents[field.fieldName])
+        // });
     }
 
     return (

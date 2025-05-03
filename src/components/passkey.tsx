@@ -6,7 +6,7 @@ import {findCommonPublicKey, PasskeyKeypair} from "@mysten/sui/keypairs/passkey"
 import {getPasskeyProvider} from "@/configs/networkConfig";
 import {useAppSelector, AppDispatch} from "@/store";
 import {useDispatch} from "react-redux";
-import {refreshBalance, setAddress} from "@/store/modules/info";
+import {refreshAll, refreshBalance, setAddress} from "@/store/modules/info";
 import {Copy} from "lucide-react";
 
 export default function PassKey() {
@@ -20,6 +20,7 @@ export default function PassKey() {
             const passkey = await PasskeyKeypair.getPasskeyInstance(passkeyProvider);
             dispatch(setAddress(passkey.toSuiAddress()));
             localStorage.setItem("PublicKey", passkey.getPublicKey().toRawBytes().toString());
+            dispatch(refreshAll(passkey.getPublicKey().toRawBytes().toString()));
         } catch (err) {
             console.error(err);
         }
@@ -44,6 +45,7 @@ export default function PassKey() {
         const passkey = new PasskeyKeypair(commonPk.toRawBytes(), passkeyProvider);
         dispatch(setAddress(passkey.toSuiAddress()));
         localStorage.setItem("PublicKey", passkey.getPublicKey().toRawBytes().toString());
+        dispatch(refreshAll(passkey.getPublicKey().toRawBytes().toString()));
     }
 
     const openCard = (isOpen: boolean) => {

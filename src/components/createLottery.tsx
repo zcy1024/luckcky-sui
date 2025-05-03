@@ -31,8 +31,7 @@ import {Label} from "@/components/ui/label";
 import {CheckedState} from "@radix-ui/react-checkbox";
 import {createPoolTx} from "@/lib/contracts";
 import {useAppSelector} from "@/store";
-import {getPasskeyProvider, suiClient} from "@/configs/networkConfig";
-import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
+import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 
 // ------ basic info ------
 const formSchemaObj = {
@@ -177,9 +176,7 @@ export default function CreateLottery() {
             encryption: fieldsArray.map(field => field.encryption),
             sender: account
         });
-        const publicKey = new Uint8Array(publicKeyStr.split(',').map(item => Number(item)));
-        const passkeyProvider = getPasskeyProvider(window.location.hostname);
-        const keypair = new PasskeyKeypair(publicKey, passkeyProvider);
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
         const res = await suiClient.signAndExecuteTransaction({
             transaction: tx,
             signer: keypair

@@ -307,6 +307,6 @@ public fun burn_pool(_: &Publisher, lucky_pool: LuckyPool, mut application_keys:
     pool.destroy_empty();
 }
 
-entry fun seal_approve(id: ID, pool: &LuckyPool, ctx: &TxContext) {
-    assert!(id == pool.id.to_inner() && pool.admins.contains(&ctx.sender()), E_Not_Seal_Approve);
+entry fun seal_approve(id: vector<u8>, pool: &LuckyPool, ctx: &TxContext) {
+    assert!(id == pool.id.to_bytes() && pool.admins.contains(&ctx.sender()), E_Not_Seal_Approve);
 }
