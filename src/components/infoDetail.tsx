@@ -114,11 +114,7 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
                 <DialogFooter className="flex gap-3 items-center">
                     {
                         (approved || rejected) &&
-                        <span className="text-xs text-green-600 text-center">Back To<br/>Confirm</span>
-                    }
-                    {
-                        isAdmin &&
-                        <Button variant="default" className="w-16 cursor-pointer">Edit</Button>
+                        <span className="text-xs text-green-600 text-center">Back To Confirm</span>
                     }
                     {
                         isAdmin && needEncryption &&

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {editApplicationTx, FieldInfoType, FieldType} from "@/lib/contracts";
-import {InfoDetail} from "@/components";
+import {AdminManager, InfoDetail} from "@/components";
 import {useCallback, useEffect, useState} from "react";
 import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
@@ -161,13 +161,14 @@ export default function ViewApplication({name, objectID, fields, applications, a
                         }
                     </div>
                 </ScrollArea>
-                <DialogFooter>
+                <DialogFooter className="flex gap-2 items-center">
                     {
                         isAdmin &&
                         <>
                             <Button variant="default" className="cursor-pointer" disabled={approveList.length === 0 && rejectList.length === 0} onClick={handleConfirm}>Confirm Selection</Button>
                             <Button variant="default" className="cursor-pointer" disabled={applications.length === 0 || approveList.length > 0 || rejectList.length > 0} onClick={handleApproveAll}>Approve All</Button>
                             <Button variant="default" className="cursor-pointer" disabled={applications.length === 0 || approveList.length > 0 || rejectList.length > 0} onClick={handleRejectAll}>Reject All</Button>
+                            <AdminManager objectID={objectID} admins={administrators} />
                         </>
                     }
                 </DialogFooter>
