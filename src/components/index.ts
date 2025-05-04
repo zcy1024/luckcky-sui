@@ -6,6 +6,7 @@ import Apply from "@/components/apply";
 import ViewApplication from "@/components/viewApplication";
 import InfoDetail from "@/components/infoDetail";
 import AdminManager from "@/components/adminManager";
+import ViewParticipants from "@/components/viewParticipants";
 
 export {
     Navigation,
@@ -16,4 +17,5 @@ export {
     ViewApplication,
     InfoDetail,
     AdminManager,
+    ViewParticipants,
 }

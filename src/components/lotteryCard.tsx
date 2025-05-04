@@ -1,8 +1,7 @@
 'use client'
 
-import {Button} from "@/components/ui/button";
 import {PoolInfoType} from "@/lib/contracts";
-import {Apply, ViewApplication} from "@/components";
+import {Apply, ViewApplication, ViewParticipants} from "@/components";
 
 export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: boolean}) {
     return (
@@ -26,7 +25,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
             <div className="flex flex-col justify-end items-end gap-1 h-full">
                 <Apply name={info.name} objectID={info.id} fields={info.fields} />
                 <ViewApplication name={info.name} objectID={info.id} fields={info.fields} applications={info.application} administrators={info.admins} />
-                <Button variant="outline" className="cursor-pointer">View Participants</Button>
+                <ViewParticipants />
             </div>
         </div>
     );

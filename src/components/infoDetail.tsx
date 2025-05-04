@@ -66,22 +66,25 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <div className={"flex gap-3 items-center w-96 overflow-x-scroll text-nowrap border border-[#041f4b] rounded-3xl px-2 py-1 cursor-pointer " +
-                    (!isOdd ? "hover:border-[#196ae3] " : "hover:border-[#35a1f7] ") +
-                    (approved ? "bg-green-600" : (rejected ? "bg-red-600" : (!isOdd ? "bg-[#fff]" : "bg-[#f9f9f9]")))
-                }>
-                    {
-                        fields.map((field, index) => {
-                            return (
-                                <span key={index}>
+                <div className="flex flex-col items-start">
+                    <div className="flex gap-3 items-center text-xs text-[#afb3b5]">
+                        <span><b>Apply Time: </b>{timeExchange(application.index)}</span>
+                        <span><b>Sender: </b>{application.sender.slice(0, 6) + "..." + application.sender.slice(-4)}</span>
+                    </div>
+                    <div className={"flex gap-3 items-center w-96 overflow-x-scroll text-nowrap border border-[#041f4b] rounded-3xl px-2 py-1 cursor-pointer " +
+                            (!isOdd ? "hover:border-[#196ae3] " : "hover:border-[#35a1f7] ") +
+                            (approved ? "bg-green-600" : (rejected ? "bg-red-600" : (!isOdd ? "bg-[#fff]" : "bg-[#f9f9f9]")))}>
+                        {
+                            fields.map((field, index) => {
+                                return (
+                                    <span key={index}>
                                     <b>{`${field.fieldName}: `}</b>
-                                    {field.needEncryption ? "******" : values[index]}
+                                        {field.needEncryption ? "******" : values[index]}
                                 </span>
-                            )
-                        })
-                    }
-                    <span><b>Apply Time: </b>{timeExchange(application.index)}</span>
-                    <span><b>Sender: </b>{application.sender.slice(0, 6) + "..." + application.sender.slice(-4)}</span>
+                                )
+                            })
+                        }
+                    </div>
                 </div>
             </DialogTrigger>
             <DialogContent className="max-h-[45rem] overflow-y-scroll">
@@ -94,18 +97,20 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
                 <div className="flex flex-col gap-5 items-center">
                     <div className="flex flex-col gap-2 items-start">
                         <Label>Apply Time</Label>
-                        <Input size={36} value={timeExchange(application.index)} disabled />
+                        <Input size={36} value={timeExchange(application.index)} disabled/>
                     </div>
                     <div className="flex flex-col gap-2 items-start">
                         <Label>Sender</Label>
-                        <Input size={36} value={application.sender} disabled />
+                        <Input size={36} value={application.sender} disabled/>
                     </div>
                     {
                         fields.map((field, index) => {
                             return (
                                 <div key={index} className="flex flex-col gap-2 items-start">
                                     <Label>{field.fieldName}</Label>
-                                    <Input size={36} value={field.needEncryption && !decrypted ? "******" : values[index]} disabled />
+                                    <Input size={36}
+                                           value={field.needEncryption && !decrypted ? "******" : values[index]}
+                                           disabled/>
                                 </div>
                             )
                         })
@@ -118,13 +123,16 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
                     }
                     {
                         isAdmin && needEncryption &&
-                        <Button variant="default" className="cursor-pointer" disabled={!needEncryption || decrypted} onClick={handleDecrypt}>Decrypt</Button>
+                        <Button variant="default" className="cursor-pointer" disabled={!needEncryption || decrypted}
+                                onClick={handleDecrypt}>Decrypt</Button>
                     }
                     {
                         isAdmin &&
                         <>
-                            <Button variant="default" className="w-[5.455rem] cursor-pointer" disabled={rejected} onClick={handleApprove}>{approved ? "Cancel" : "Approve"}</Button>
-                            <Button variant="default" className="w-[4.83rem] cursor-pointer" disabled={approved} onClick={handleReject}>{rejected ? "Cancel" : "Reject"}</Button>
+                            <Button variant="default" className="w-[5.455rem] cursor-pointer" disabled={rejected}
+                                    onClick={handleApprove}>{approved ? "Cancel" : "Approve"}</Button>
+                            <Button variant="default" className="w-[4.83rem] cursor-pointer" disabled={approved}
+                                    onClick={handleReject}>{rejected ? "Cancel" : "Reject"}</Button>
                         </>
                     }
                 </DialogFooter>
