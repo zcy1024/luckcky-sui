@@ -175,12 +175,18 @@ fun add_to_pool(pool: &mut LuckyPool, info: Info) {
     pool.index = pool.index + 1;
 }
 
-entry fun approve(pool: &mut LuckyPool, mut keys: vector<String>, ctx: &TxContext) {
+public fun edit_application(pool: &mut LuckyPool, mut keys: vector<String>, is_approve: bool, ctx: &TxContext) {
     assert!(pool.admins.contains(&ctx.sender()), E_Not_Admin);
     assert!(!pool.ended, E_Ended_Pool);
     while (!keys.is_empty()) {
-        let info = pool.application.remove(keys.pop_back());
-        add_to_pool(pool, info);
+        let key = keys.pop_back();
+        if (!pool.application.contains(key)) {
+            continue
+        };
+        let info = pool.application.remove(key);
+        if (is_approve) {
+            add_to_pool(pool, info);
+        };
     };
 }
 
