@@ -11,10 +11,13 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {FieldInfoType, FieldType} from "@/lib/contracts";
+import {editApplicationTx, FieldInfoType, FieldType} from "@/lib/contracts";
 import {InfoDetail} from "@/components";
 import {useCallback, useEffect, useState} from "react";
-import {useAppSelector} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
+import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
+import {refreshPoolInfos} from "@/store/modules/info";
+import {useDispatch} from "react-redux";
 
 export default function ViewApplication({name, objectID, fields, applications, administrators}: {
     name: string,
@@ -24,6 +27,8 @@ export default function ViewApplication({name, objectID, fields, applications, a
     administrators: string[]
 }) {
     const account = useAppSelector(state => state.info.address);
+    const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const dispatch = useDispatch<AppDispatch>();
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [open, setOpen] = useState<boolean>(false);
     const [approveList, setApproveList] = useState<string[]>([]);
@@ -63,8 +68,23 @@ export default function ViewApplication({name, objectID, fields, applications, a
     }
 
     const handleConfirm = async () => {
-        console.log(approveList);
-        console.log(rejectList);
+        const tx = editApplicationTx({
+            poolID: objectID,
+            approveList,
+            rejectList
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        dispatch(refreshPoolInfos());
+        setApproveList([]);
+        setRejectList([]);
+        setOpen(false);
     }
 
     const getAllApplications = () => {
@@ -72,11 +92,39 @@ export default function ViewApplication({name, objectID, fields, applications, a
     }
 
     const handleApproveAll = async () => {
-        console.log(getAllApplications());
+        const tx = editApplicationTx({
+            poolID: objectID,
+            approveList: getAllApplications(),
+            rejectList: []
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        dispatch(refreshPoolInfos());
+        setOpen(false);
     }
 
     const handleRejectAll = async () => {
-        console.log(getAllApplications());
+        const tx = editApplicationTx({
+            poolID: objectID,
+            approveList: [],
+            rejectList: getAllApplications()
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        dispatch(refreshPoolInfos());
+        setOpen(false);
     }
 
     return (
