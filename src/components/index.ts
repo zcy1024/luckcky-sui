@@ -7,6 +7,7 @@ import ViewApplication from "@/components/viewApplication";
 import InfoDetail from "@/components/infoDetail";
 import AdminManager from "@/components/adminManager";
 import ViewParticipants from "@/components/viewParticipants";
+import ParticipantsInfoDetail from "@/components/participantsInfoDetail";
 
 export {
     Navigation,
@@ -18,4 +19,5 @@ export {
     InfoDetail,
     AdminManager,
     ViewParticipants,
+    ParticipantsInfoDetail,
 }

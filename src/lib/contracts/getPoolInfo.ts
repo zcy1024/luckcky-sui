@@ -30,7 +30,13 @@ type InitPoolInfoType = {
                 }
             }
         },
-        pool: [],
+        pool: {
+            fields: {
+                id: {
+                    id: string
+                }
+            }
+        },
         admins: string[]
         confirmed: [],
         ended: boolean
@@ -159,7 +165,7 @@ async function getPool(id: string): Promise<PoolInfoType> {
             return field1.fieldName < field2.fieldName ? -1 : 1;
         }),
         application: (await getTableFields(initInfo.fields.application.fields.id.id, null)).sort((field1, field2) => field1.index > field2.index ? -1 : 1),
-        pool: [],
+        pool: (await getTableFields(initInfo.fields.pool.fields.id.id, null)).sort((field1, field2) => field1.index < field2.index ? -1 : 1),
         admins: initInfo.fields.admins,
         confirmed: [],
         ended: initInfo.fields.ended
