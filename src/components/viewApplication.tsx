@@ -168,7 +168,7 @@ export default function ViewApplication({name, objectID, fields, applications, a
                             <Button variant="default" className="cursor-pointer" disabled={approveList.length === 0 && rejectList.length === 0} onClick={handleConfirm}>Confirm Selection</Button>
                             <Button variant="default" className="cursor-pointer" disabled={applications.length === 0 || approveList.length > 0 || rejectList.length > 0} onClick={handleApproveAll}>Approve All</Button>
                             <Button variant="default" className="cursor-pointer" disabled={applications.length === 0 || approveList.length > 0 || rejectList.length > 0} onClick={handleRejectAll}>Reject All</Button>
-                            <AdminManager objectID={objectID} admins={administrators} />
+                            <AdminManager objectID={objectID} admins={administrators} setParentOpen={setOpen} />
                         </>
                     }
                 </DialogFooter>

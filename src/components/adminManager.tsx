@@ -14,13 +14,16 @@ import {ScrollArea} from "@/components/ui/scroll-area";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {Copy} from "lucide-react";
-import {useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {changeAdminsTx} from "@/lib/contracts";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
-import {useAppSelector} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
+import {useDispatch} from "react-redux";
+import {refreshPoolInfos} from "@/store/modules/info";
 
-export default function AdminManager({objectID, admins}: {objectID: string, admins: string[]}) {
+export default function AdminManager({objectID, admins, setParentOpen}: {objectID: string, admins: string[], setParentOpen: Dispatch<SetStateAction<boolean>>}) {
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const dispatch = useDispatch<AppDispatch>();
     const [pendingAddStr, setPendingAddStr] = useState<string>("");
     const [pendingRemoveStr, setPendingRemoveStr] = useState<string>("");
     const [error, setError] = useState("");
@@ -75,6 +78,8 @@ export default function AdminManager({objectID, admins}: {objectID: string, admi
         await suiClient.waitForTransaction({
             digest: res.digest
         });
+        dispatch(refreshPoolInfos());
+        setParentOpen(false);
     }
 
     return (
