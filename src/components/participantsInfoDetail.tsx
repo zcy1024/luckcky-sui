@@ -92,7 +92,7 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
                 <DialogFooter className="flex gap-3 items-center">
                     {
                         isAdmin &&
-                        <Button variant="default" className="w-[5.455rem] cursor-pointer">Edit</Button>
+                        <Button variant="default" className="cursor-pointer">Edit</Button>
                     }
                     {
                         isAdmin && needEncryption &&

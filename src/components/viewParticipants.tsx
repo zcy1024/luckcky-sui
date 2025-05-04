@@ -62,7 +62,15 @@ export default function ViewParticipants({name, objectID, fields, participants, 
                         }
                     </div>
                 </ScrollArea>
-                <DialogFooter></DialogFooter>
+                <DialogFooter className="flex gap-3 items-center">
+                    {
+                        isAdmin &&
+                        <>
+                            <Button variant="default" className="cursor-pointer">Confirm</Button>
+                            <Button variant="default" className="cursor-pointer">Lottery Draw</Button>
+                        </>
+                    }
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
