@@ -3,7 +3,7 @@ import {createPoolTx} from "@/lib/contracts/createPoolTx";
 import getPoolInfo, {FieldType, PoolInfoType, FieldInfoType} from "@/lib/contracts/getPoolInfo";
 import {applyTx} from "@/lib/contracts/applyTx";
 import encrypt from "@/lib/contracts/encrypt";
-import decrypt from "@/lib/contracts/decrypt";
+import decrypt, {isNeedEncryption} from "@/lib/contracts/decrypt";
 
 export type {
     FieldType,
@@ -18,4 +18,5 @@ export {
     applyTx,
     encrypt,
     decrypt,
+    isNeedEncryption,
 }

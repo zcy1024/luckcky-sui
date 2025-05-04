@@ -5,7 +5,7 @@ import {getSessionKey, network, networkConfig, sealClient, suiClient} from "@/co
 import {Transaction} from "@mysten/sui/transactions";
 import {fromHex} from "@mysten/bcs";
 
-function isNeedEncryption(fields: FieldType[]) {
+export function isNeedEncryption(fields: FieldType[]) {
     for (const field of fields)
         if (field.needEncryption)
             return true;
