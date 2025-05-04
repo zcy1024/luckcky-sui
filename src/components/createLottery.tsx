@@ -197,7 +197,7 @@ export default function CreateLottery() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" className="cursor-pointer">Create Lottery</Button>
+                <Button variant="default" className="cursor-pointer">Create Lottery</Button>
             </DialogTrigger>
             <DialogContent className="h-[45rem] overflow-y-scroll">
                 <Form {...form}>
