@@ -100,6 +100,9 @@ const initialFields: FieldsType = {
 }
 
 export default function CreateLottery() {
+    // open dialog or not
+    const [open, setOpen] = useState<boolean>(false);
+
     // basic info
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -188,10 +191,11 @@ export default function CreateLottery() {
             digest: res.digest
         });
         dispatch(refreshPoolInfos());
+        setOpen(false);
     }
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">Create Lottery</Button>
             </DialogTrigger>
