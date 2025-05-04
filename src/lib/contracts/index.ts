@@ -4,6 +4,7 @@ import getPoolInfo, {FieldType, PoolInfoType, FieldInfoType} from "@/lib/contrac
 import {applyTx} from "@/lib/contracts/applyTx";
 import encrypt from "@/lib/contracts/encrypt";
 import decrypt, {isNeedEncryption} from "@/lib/contracts/decrypt";
+import {approveTx} from "@/lib/contracts/approveTx";
 
 export type {
     FieldType,
@@ -19,4 +20,5 @@ export {
     encrypt,
     decrypt,
     isNeedEncryption,
+    approveTx,
 }

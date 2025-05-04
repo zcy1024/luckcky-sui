@@ -17,11 +17,22 @@ import {Input} from "@/components/ui/input";
 import {useEffect, useState} from "react";
 import {useAppSelector} from "@/store";
 
-export default function InfoDetail({objectID, fields, application, isOdd}: {objectID: string, fields: FieldType[], application: FieldInfoType, isOdd: boolean}) {
+export default function InfoDetail({objectID, fields, application, isOdd, changeApproveList, changeRejectList, isAdmin}: {
+    objectID: string,
+    fields: FieldType[],
+    application: FieldInfoType,
+    isOdd: boolean,
+    changeApproveList: (key: string, isAdd: boolean) => void,
+    changeRejectList: (key: string, isAdd: boolean) => void,
+    isAdmin: boolean,
+}) {
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
     const [needEncryption, setNeedEncryption] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>([]);
     const [decrypted, setDecrypted] = useState<boolean>(false);
+    const [approved, setApproved] = useState<boolean>(false);
+    const [rejected, setRejected] = useState<boolean>(false);
+
     useEffect(() => {
         setNeedEncryption(isNeedEncryption(fields));
         setValues(fields.map(field => {
@@ -38,10 +49,27 @@ export default function InfoDetail({objectID, fields, application, isOdd}: {obje
         setDecrypted(true);
     }
 
+    const handleApprove = () => {
+        if (rejected)
+            return;
+        changeApproveList(application.sender + application.index, !approved);
+        setApproved(!approved);
+    }
+
+    const handleReject = () => {
+        if (approved)
+            return;
+        changeRejectList(application.sender + application.index, !rejected);
+        setRejected(!rejected);
+    }
+
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <div className={"flex gap-3 items-center w-96 overflow-x-scroll text-nowrap border border-[#041f4b] rounded-3xl px-2 py-1 cursor-pointer " + (!isOdd ? "bg-[#fff] hover:border-[#196ae3]" : "bg-[#f9f9f9] hover:border-[#35a1f7]")}>
+                <div className={"flex gap-3 items-center w-96 overflow-x-scroll text-nowrap border border-[#041f4b] rounded-3xl px-2 py-1 cursor-pointer " +
+                    (!isOdd ? "hover:border-[#196ae3] " : "hover:border-[#35a1f7] ") +
+                    (approved ? "bg-green-600" : (rejected ? "bg-red-600" : (!isOdd ? "bg-[#fff]" : "bg-[#f9f9f9]")))
+                }>
                     {
                         fields.map((field, index) => {
                             return (
@@ -84,12 +112,25 @@ export default function InfoDetail({objectID, fields, application, isOdd}: {obje
                     }
                 </div>
                 <DialogFooter className="flex gap-3 items-center">
-                    <Button variant="default" className="cursor-pointer">Edit</Button>
                     {
-                        needEncryption &&
+                        (approved || rejected) &&
+                        <span className="text-xs text-green-600 text-center">Back To<br/>Confirm</span>
+                    }
+                    {
+                        isAdmin &&
+                        <Button variant="default" className="w-16 cursor-pointer">Edit</Button>
+                    }
+                    {
+                        isAdmin && needEncryption &&
                         <Button variant="default" className="cursor-pointer" disabled={!needEncryption || decrypted} onClick={handleDecrypt}>Decrypt</Button>
                     }
-                    <Button variant="default" className="cursor-pointer">Approve</Button>
+                    {
+                        isAdmin &&
+                        <>
+                            <Button variant="default" className="w-[5.455rem] cursor-pointer" disabled={rejected} onClick={handleApprove}>{approved ? "Cancel" : "Approve"}</Button>
+                            <Button variant="default" className="w-[4.83rem] cursor-pointer" disabled={approved} onClick={handleReject}>{rejected ? "Cancel" : "Reject"}</Button>
+                        </>
+                    }
                 </DialogFooter>
             </DialogContent>
         </Dialog>

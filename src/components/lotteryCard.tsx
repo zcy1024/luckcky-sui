@@ -25,7 +25,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
             </div>
             <div className="flex flex-col justify-end items-end gap-1 h-full">
                 <Apply name={info.name} objectID={info.id} fields={info.fields} />
-                <ViewApplication name={info.name} objectID={info.id} fields={info.fields} applications={info.application} />
+                <ViewApplication name={info.name} objectID={info.id} fields={info.fields} applications={info.application} administrators={info.admins} />
                 <Button variant="outline" className="cursor-pointer">View Participants</Button>
             </div>
         </div>

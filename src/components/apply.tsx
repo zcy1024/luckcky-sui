@@ -14,12 +14,15 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ChangeEvent, useState} from "react";
 import {applyTx, encrypt, FieldType} from "@/lib/contracts";
-import {useAppSelector} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
+import {refreshPoolInfos} from "@/store/modules/info";
+import {useDispatch} from "react-redux";
 
 export default function Apply({name, objectID, fields}: {name: string, objectID: string, fields: FieldType[]}) {
     const account = useAppSelector(state => state.info.address);
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const dispatch = useDispatch<AppDispatch>();
     const [contents, setContents] = useState<{
         [key: string]: string
     }>({});
@@ -59,6 +62,7 @@ export default function Apply({name, objectID, fields}: {name: string, objectID:
         await suiClient.waitForTransaction({
             digest: res.digest
         });
+        dispatch(refreshPoolInfos());
     }
 
     return (

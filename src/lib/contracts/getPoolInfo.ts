@@ -31,6 +31,7 @@ type InitPoolInfoType = {
             }
         },
         pool: [],
+        admins: string[]
         confirmed: [],
         ended: boolean
     }
@@ -80,6 +81,7 @@ export type PoolInfoType = {
     fields: FieldType[],
     application: FieldInfoType[],
     pool: FieldInfoType[],
+    admins: string[],
     confirmed: [],
     ended: boolean
 }
@@ -158,6 +160,7 @@ async function getPool(id: string): Promise<PoolInfoType> {
         }),
         application: (await getTableFields(initInfo.fields.application.fields.id.id, null)).sort((field1, field2) => field1.index > field2.index ? -1 : 1),
         pool: [],
+        admins: initInfo.fields.admins,
         confirmed: [],
         ended: initInfo.fields.ended
     };
