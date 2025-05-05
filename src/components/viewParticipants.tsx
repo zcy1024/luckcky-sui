@@ -11,14 +11,14 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {confirmListTx, editInfoTx, FieldInfoType, FieldType} from "@/lib/contracts";
+import {confirmListTx, editInfoTx, FieldInfoType, FieldType, lotteryDrawTx} from "@/lib/contracts";
 import {AppDispatch, useAppSelector} from "@/store";
 import {useEffect, useState} from "react";
 import {ParticipantsInfoDetail} from "@/components/index";
 import {Transaction} from "@mysten/sui/transactions";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 import {useDispatch} from "react-redux";
-import {refreshPoolInfos} from "@/store/modules/info";
+import {refreshPoolInfos, setNavTab} from "@/store/modules/info";
 
 export default function ViewParticipants({name, objectID, fields, participants, administrators, hasConfirmed, minimumParticipants}: {
     name: string,
@@ -119,6 +119,21 @@ export default function ViewParticipants({name, objectID, fields, participants, 
     }
 
     const handleDraw = async () => {
+        const tx = lotteryDrawTx({
+            poolID: objectID,
+            time: new Date().getTime().toString()
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        dispatch(refreshPoolInfos());
+        dispatch(setNavTab("Ended"));
+        setOpen(false);
     }
 
     return (

@@ -8,6 +8,7 @@ import {editApplicationTx} from "@/lib/contracts/editApplicationTx";
 import {changeAdminsTx} from "@/lib/contracts/changeAdminsTx";
 import editInfoTx from "@/lib/contracts/editInfoTx";
 import {confirmListTx} from "@/lib/contracts/confirmListTx";
+import {lotteryDrawTx} from "@/lib/contracts/lotteryDrawTx";
 
 export type {
     FieldType,
@@ -27,4 +28,5 @@ export {
     changeAdminsTx,
     editInfoTx,
     confirmListTx,
+    lotteryDrawTx
 }
