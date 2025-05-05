@@ -176,8 +176,17 @@ export default function ViewApplication({name, objectID, fields, applications, a
         }
     }
 
+    const handleOpenChange = () => {
+        if (!open) {
+            setOpen(true);
+            return;
+        }
+        clearList();
+        setOpen(false);
+    }
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">View Application</Button>
             </DialogTrigger>

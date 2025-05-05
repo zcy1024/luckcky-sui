@@ -11,13 +11,11 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import {decrypt, FieldInfoType, FieldType, isNeedEncryption} from "@/lib/contracts";
-import {randomTwentyFive, timeExchange} from "@/lib/utils";
+import {timeExchange} from "@/lib/utils";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {useEffect, useState} from "react";
-import {AppDispatch, useAppSelector} from "@/store";
-import {setProgressValue} from "@/store/modules/info";
-import {useDispatch} from "react-redux";
+import {useAppSelector} from "@/store";
 
 export default function InfoDetail({objectID, fields, application, isOdd, changeApproveList, changeRejectList, isAdmin}: {
     objectID: string,
@@ -29,7 +27,7 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
     isAdmin: boolean,
 }) {
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
-    const dispatch = useDispatch<AppDispatch>();
+    // const dispatch = useDispatch<AppDispatch>();
     const [needEncryption, setNeedEncryption] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>([]);
     const [decrypted, setDecrypted] = useState<boolean>(false);
@@ -47,15 +45,15 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
     }, [fields, application]);
 
     const handleDecrypt = async () => {
-        dispatch(setProgressValue(25 + randomTwentyFive()));
+        // dispatch(setProgressValue(25 + randomTwentyFive()));
         try {
             const decryptedValues = await decrypt(publicKeyStr, objectID, fields, values);
-            dispatch(setProgressValue(100));
+            // dispatch(setProgressValue(100));
             setValues(decryptedValues);
             setDecrypted(true);
         } catch (e) {
             console.error(e);
-            dispatch(setProgressValue(100));
+            // dispatch(setProgressValue(100));
         }
     }
 

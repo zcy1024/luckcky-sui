@@ -13,7 +13,7 @@ import {
 import {ScrollArea} from "@/components/ui/scroll-area";
 import {confirmListTx, editInfoTx, FieldInfoType, FieldType, lotteryDrawTx} from "@/lib/contracts";
 import {AppDispatch, useAppSelector} from "@/store";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {ParticipantsInfoDetail} from "@/components/index";
 import {Transaction} from "@mysten/sui/transactions";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
@@ -47,7 +47,7 @@ export default function ViewParticipants({name, objectID, fields, participants, 
     const [confirmListNow, setConfirmListNow] = useState<boolean>(false);
     const [canDraw, setCanDraw] = useState<boolean>(false);
 
-    useEffect(() => {
+    const init = useCallback(() => {
         setIsAdmin(administrators.includes(account));
         setEditContentsList({
             indexList: [],
@@ -58,27 +58,23 @@ export default function ViewParticipants({name, objectID, fields, participants, 
         setCanDraw(hasConfirmed.length >= Math.floor((administrators.length + 1) / 2));
     }, [account, administrators, hasConfirmed]);
 
+    useEffect(() => {
+        init()
+    }, [init]);
+
     const editList = (index: number, keys: string[], values: string[], isAdd: boolean) => {
         if (isAdd) {
             setEditContentsList({
-                indexList: [
-                    ...editContentsList.indexList,
-                    index
-                ],
-                keysList: [
-                    ...editContentsList.keysList,
-                    keys
-                ],
-                valuesList: [
-                    ...editContentsList.valuesList,
-                    values
-                ]
+                indexList: editContentsList.indexList.concat([index]),
+                keysList: editContentsList.keysList.concat([keys]),
+                valuesList: editContentsList.valuesList.concat([values])
             });
         } else {
+            const idx = editContentsList.indexList.findIndex(item => item === index);
             setEditContentsList({
-                indexList: editContentsList.indexList.filter(item => item !== index),
-                keysList: editContentsList.keysList.filter(item => item !== keys),
-                valuesList: editContentsList.valuesList.filter(item => item !== values)
+                indexList: editContentsList.indexList.filter((_, index) => idx !== index),
+                keysList: editContentsList.keysList.filter((_, index) => idx !== index),
+                valuesList: editContentsList.valuesList.filter((_, index) => idx !== index)
             });
         }
     }
@@ -177,8 +173,17 @@ export default function ViewParticipants({name, objectID, fields, participants, 
         }
     }
 
+    const handleOpenChange = () => {
+        if (!open) {
+            setOpen(true);
+            return;
+        }
+        init();
+        setOpen(false);
+    }
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="outline" className="cursor-pointer">View Participants</Button>
             </DialogTrigger>
