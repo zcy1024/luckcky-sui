@@ -19,7 +19,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
             <div className="flex flex-col justify-end items-start gap-1 h-full">
                 <span>number of winners: <b>{info.numberOfWinners}</b></span>
                 <span>minimum participants: <b>{info.minimumParticipants}</b></span>
-                <span>current participants: <b>100</b></span>
+                <span>current participants: <b>{info.pool.length}</b></span>
                 <span>repeat winnings allowed: <b>{info.allowsMultipleAwards ? "true" : "false"}</b></span>
             </div>
             <div className="flex flex-col justify-end items-end gap-1 h-full">
