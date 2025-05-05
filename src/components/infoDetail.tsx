@@ -84,6 +84,10 @@ export default function InfoDetail({objectID, fields, application, isOdd, change
                                 )
                             })
                         }
+                        {
+                            fields.length === 0 &&
+                            <span>No additional information.</span>
+                        }
                     </div>
                 </div>
             </DialogTrigger>

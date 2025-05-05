@@ -123,6 +123,10 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
                                 )
                             })
                         }
+                        {
+                            fields.length === 0 &&
+                            <span>No additional information.</span>
+                        }
                     </div>
                 </div>
             </DialogTrigger>
