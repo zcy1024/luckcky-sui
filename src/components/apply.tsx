@@ -16,8 +16,9 @@ import {ChangeEvent, useState} from "react";
 import {applyTx, encrypt, FieldType} from "@/lib/contracts";
 import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
-import {refreshPoolInfos} from "@/store/modules/info";
+import {refreshPoolInfos, setProgressValue} from "@/store/modules/info";
 import {useDispatch} from "react-redux";
+import {randomTwentyFive} from "@/lib/utils";
 
 export default function Apply({name, objectID, fields}: {name: string, objectID: string, fields: FieldType[]}) {
     const account = useAppSelector(state => state.info.address);
@@ -48,21 +49,37 @@ export default function Apply({name, objectID, fields}: {name: string, objectID:
             setError(true);
             return;
         }
-        const tx = applyTx({
-            poolID: objectID,
-            addrAndTime: account + (new Date().getTime().toString()),
-            keys: fields.map(field => field.fieldName),
-            values: await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]))
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
+        dispatch(setProgressValue(0));
+        try {
+            const tx = applyTx({
+                poolID: objectID,
+                addrAndTime: account + (new Date().getTime().toString()),
+                keys: fields.map(field => field.fieldName),
+                values: await encrypt(objectID, fields, fields.map(field => contents[field.fieldName]))
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (

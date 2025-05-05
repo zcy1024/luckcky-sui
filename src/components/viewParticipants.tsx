@@ -18,7 +18,8 @@ import {ParticipantsInfoDetail} from "@/components/index";
 import {Transaction} from "@mysten/sui/transactions";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 import {useDispatch} from "react-redux";
-import {refreshPoolInfos, setNavTab} from "@/store/modules/info";
+import {refreshPoolInfos, setNavTab, setProgressValue} from "@/store/modules/info";
+import {randomTwentyFive} from "@/lib/utils";
 
 export default function ViewParticipants({name, objectID, fields, participants, administrators, hasConfirmed, minimumParticipants}: {
     name: string,
@@ -83,57 +84,97 @@ export default function ViewParticipants({name, objectID, fields, participants, 
     }
 
     const handleEdit = async () => {
-        const tx = new Transaction();
-        for (let i = 0; i < editContentsList.indexList.length; i++) {
-            const index = editContentsList.indexList[i];
-            const keys = editContentsList.keysList[i];
-            const values = editContentsList.valuesList[i];
-            editInfoTx(tx, objectID, index, keys, values);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = new Transaction();
+            for (let i = 0; i < editContentsList.indexList.length; i++) {
+                const index = editContentsList.indexList[i];
+                const keys = editContentsList.keysList[i];
+                const values = editContentsList.valuesList[i];
+                editInfoTx(tx, objectID, index, keys, values);
+            }
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
         }
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        setOpen(false);
     }
 
     const handleConfirmList = async () => {
-        const tx = confirmListTx({
-            poolID: objectID
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        setConfirmListNow(true);
-        setCanDraw(hasConfirmed.length + 1 >= Math.floor((administrators.length + 1) / 2));
+        dispatch(setProgressValue(0));
+        try {
+            const tx = confirmListTx({
+                poolID: objectID
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(50 + randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(setProgressValue(100));
+            setConfirmListNow(true);
+            setCanDraw(hasConfirmed.length + 1 >= Math.floor((administrators.length + 1) / 2));
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     const handleDraw = async () => {
-        const tx = lotteryDrawTx({
-            poolID: objectID,
-            time: new Date().getTime().toString()
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        dispatch(setNavTab("Ended"));
-        setOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = lotteryDrawTx({
+                poolID: objectID,
+                time: new Date().getTime().toString()
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    dispatch(setNavTab("Ended"));
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (

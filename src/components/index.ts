@@ -10,6 +10,7 @@ import ViewParticipants from "@/components/viewParticipants";
 import ParticipantsInfoDetail from "@/components/participantsInfoDetail";
 import ShowWinners from "@/components/showWinners";
 import WinnerInfoDetail from "@/components/winnerInfoDetail";
+import Loading from "@/components/loading";
 
 export {
     Navigation,
@@ -24,4 +25,5 @@ export {
     ParticipantsInfoDetail,
     ShowWinners,
     WinnerInfoDetail,
+    Loading
 }

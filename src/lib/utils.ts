@@ -8,3 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function timeExchange(time: string | number) {
   return new Date(Number(time)).toLocaleString().replaceAll('/', '-');
 }
+
+export function randomTwentyFive() {
+  return Math.floor(Math.random() * 25);
+}

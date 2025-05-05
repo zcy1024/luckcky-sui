@@ -33,7 +33,8 @@ import {createPoolTx} from "@/lib/contracts";
 import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 import {useDispatch} from "react-redux";
-import {refreshPoolInfos, setNavTab} from "@/store/modules/info";
+import {refreshPoolInfos, setNavTab, setProgressValue} from "@/store/modules/info";
+import {randomTwentyFive} from "@/lib/utils";
 
 // ------ basic info ------
 const formSchemaObj = {
@@ -169,30 +170,46 @@ export default function CreateLottery() {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (!account || !publicKeyStr)
             return;
-        const curTime = new Date().getTime().toString();
-        const fieldsArray = [fields["0"], fields["1"], fields["2"], fields["3"], fields["4"]].filter(field => field.field.length > 0);
-        const tx = createPoolTx({
-            name: values.Name,
-            description: values.Description,
-            creationTime: curTime,
-            minimumParticipants: values["Minimum Amount"],
-            numberOfWinners: values.Winners,
-            allowsMultipleAwards: values["Repeat Award"] ? values["Repeat Award"] : false,
-            fields: fieldsArray.map(field => field.field),
-            encryption: fieldsArray.map(field => field.encryption),
-            sender: account
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        dispatch(setNavTab("Main"));
-        setOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const curTime = new Date().getTime().toString();
+            const fieldsArray = [fields["0"], fields["1"], fields["2"], fields["3"], fields["4"]].filter(field => field.field.length > 0);
+            const tx = createPoolTx({
+                name: values.Name,
+                description: values.Description,
+                creationTime: curTime,
+                minimumParticipants: values["Minimum Amount"],
+                numberOfWinners: values.Winners,
+                allowsMultipleAwards: values["Repeat Award"] ? values["Repeat Award"] : false,
+                fields: fieldsArray.map(field => field.field),
+                encryption: fieldsArray.map(field => field.encryption),
+                sender: account
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    dispatch(setNavTab("Main"));
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (

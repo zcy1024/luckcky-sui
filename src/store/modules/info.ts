@@ -14,6 +14,7 @@ export type initialStateType = {
     endedPoolInfos: PoolInfoType[],
     winnerEvents: WinnerEventType[],
     navTab: string,
+    progressValue: number
 }
 
 const initialState: initialStateType = {
@@ -23,7 +24,8 @@ const initialState: initialStateType = {
     poolInfos: [],
     endedPoolInfos: [],
     winnerEvents: [],
-    navTab: "Main"
+    navTab: "Main",
+    progressValue: 0
 }
 
 const infoStore = createSlice({
@@ -47,6 +49,9 @@ const infoStore = createSlice({
         setNavTab(state, action: {payload: string}) {
             state.navTab = action.payload;
         },
+        setProgressValue(state, action: {payload: number}) {
+            state.progressValue = action.payload;
+        }
     }
 });
 
@@ -92,6 +97,7 @@ const {
     setPublicKeyStr,
     setPoolInfos,
     setNavTab,
+    setProgressValue
 } = infoStore.actions;
 
 export {
@@ -100,6 +106,7 @@ export {
     setPublicKeyStr,
     setPoolInfos,
     setNavTab,
+    setProgressValue
 };
 
 export {

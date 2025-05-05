@@ -14,7 +14,10 @@ import {decrypt, encrypt, FieldInfoType, FieldType, isNeedEncryption} from "@/li
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import {ChangeEvent, useEffect, useState} from "react";
-import {useAppSelector} from "@/store";
+import {AppDispatch, useAppSelector} from "@/store";
+import {setProgressValue} from "@/store/modules/info";
+import {useDispatch} from "react-redux";
+import {randomTwentyFive} from "@/lib/utils";
 
 export default function ParticipantsInfoDetail({objectID, fields, participant, isOdd, isAdmin, editParentList}: {
     objectID: string,
@@ -25,6 +28,7 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
     editParentList: (index: number, keys: string[], values: string[], isAdd: boolean) => void
 }) {
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
+    const dispatch = useDispatch<AppDispatch>();
     const [needEncryption, setNeedEncryption] = useState<boolean>(false);
     const [values, setValues] = useState<string[]>([]);
     const [decrypted, setDecrypted] = useState<boolean>(false);
@@ -52,17 +56,24 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
     }, [fields, participant]);
 
     const handleDecrypt = async () => {
-        const decryptedValues = await decrypt(publicKeyStr, objectID, fields, values);
-        const editContents: {
-            [key: string]: string
-        } = {};
-        fields.forEach((field, index) => {
-            const fieldName = field.fieldName;
-            editContents[fieldName] = decryptedValues[index];
-        });
-        setEditContents(editContents);
-        setValues(decryptedValues);
-        setDecrypted(true);
+        dispatch(setProgressValue(25 + randomTwentyFive()));
+        try {
+            const decryptedValues = await decrypt(publicKeyStr, objectID, fields, values);
+            dispatch(setProgressValue(100));
+            const editContents: {
+                [key: string]: string
+            } = {};
+            fields.forEach((field, index) => {
+                const fieldName = field.fieldName;
+                editContents[fieldName] = decryptedValues[index];
+            });
+            setEditContents(editContents);
+            setValues(decryptedValues);
+            setDecrypted(true);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     const handleEditInput = (e: ChangeEvent<HTMLInputElement>, key: string) => {
@@ -88,9 +99,16 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
 
     const handleClickCancel = async () => {
         if (confirmedEdit) {
-            setConfirmedEdit(false);
-            const [keys, values] = await splitEditContents();
-            editParentList(participant.index, keys, values, false);
+            dispatch(setProgressValue(25 + randomTwentyFive()));
+            try {
+                const [keys, values] = await splitEditContents();
+                dispatch(setProgressValue(100));
+                editParentList(participant.index, keys, values, false);
+                setConfirmedEdit(false);
+            } catch (e) {
+                console.error(e);
+                dispatch(setProgressValue(100));
+            }
             return;
         }
         setIsEditing(false);
@@ -101,9 +119,16 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
             setIsEditing(true);
             return;
         }
-        setConfirmedEdit(true);
-        const [keys, values] = await splitEditContents();
-        editParentList(participant.index, keys, values, true);
+        dispatch(setProgressValue(25 + randomTwentyFive()));
+        try {
+            const [keys, values] = await splitEditContents();
+            dispatch(setProgressValue(100));
+            editParentList(participant.index, keys, values, true);
+            setConfirmedEdit(true);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (

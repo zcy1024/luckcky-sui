@@ -16,8 +16,9 @@ import {AdminManager, InfoDetail} from "@/components";
 import {useCallback, useEffect, useState} from "react";
 import {AppDispatch, useAppSelector} from "@/store";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
-import {refreshPoolInfos} from "@/store/modules/info";
+import {refreshPoolInfos, setProgressValue} from "@/store/modules/info";
 import {useDispatch} from "react-redux";
+import {randomTwentyFive} from "@/lib/utils";
 
 export default function ViewApplication({name, objectID, fields, applications, administrators}: {
     name: string,
@@ -68,23 +69,39 @@ export default function ViewApplication({name, objectID, fields, applications, a
     }
 
     const handleConfirm = async () => {
-        const tx = editApplicationTx({
-            poolID: objectID,
-            approveList,
-            rejectList
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        setApproveList([]);
-        setRejectList([]);
-        setOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = editApplicationTx({
+                poolID: objectID,
+                approveList,
+                rejectList
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    setApproveList([]);
+                    setRejectList([]);
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     const getAllApplications = () => {
@@ -92,39 +109,71 @@ export default function ViewApplication({name, objectID, fields, applications, a
     }
 
     const handleApproveAll = async () => {
-        const tx = editApplicationTx({
-            poolID: objectID,
-            approveList: getAllApplications(),
-            rejectList: []
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        setOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = editApplicationTx({
+                poolID: objectID,
+                approveList: getAllApplications(),
+                rejectList: []
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     const handleRejectAll = async () => {
-        const tx = editApplicationTx({
-            poolID: objectID,
-            approveList: [],
-            rejectList: getAllApplications()
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        setOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = editApplicationTx({
+                poolID: objectID,
+                approveList: [],
+                rejectList: getAllApplications()
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr);
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    setOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (

@@ -19,7 +19,8 @@ import {changeAdminsTx} from "@/lib/contracts";
 import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 import {AppDispatch, useAppSelector} from "@/store";
 import {useDispatch} from "react-redux";
-import {refreshPoolInfos} from "@/store/modules/info";
+import {refreshPoolInfos, setProgressValue} from "@/store/modules/info";
+import {randomTwentyFive} from "@/lib/utils";
 
 export default function AdminManager({objectID, admins, setParentOpen}: {objectID: string, admins: string[], setParentOpen: Dispatch<SetStateAction<boolean>>}) {
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
@@ -55,7 +56,7 @@ export default function AdminManager({objectID, admins, setParentOpen}: {objectI
             return false;
         }
         const diffAddresses = final.filter(address => !admins.includes(address));
-        if (diffAddresses.length === 0) {
+        if (final.length === admins.length && diffAddresses.length === 0) {
             setError("The result should be different from the initial one");
             return false;
         }
@@ -65,21 +66,37 @@ export default function AdminManager({objectID, admins, setParentOpen}: {objectI
     const handleConfirm = async () => {
         if (!checkValidAddresses(pendingAddStr) || !checkValidAddresses(pendingRemoveStr) || !checkAtLeastOneLeft())
             return;
-        const tx = changeAdminsTx({
-            poolID: objectID,
-            pendingAddList: getValidAddresses(pendingAddStr),
-            pendingRemoveList: getValidAddresses(pendingRemoveStr),
-        });
-        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
-        const res = await suiClient.signAndExecuteTransaction({
-            transaction: tx,
-            signer: keypair
-        });
-        await suiClient.waitForTransaction({
-            digest: res.digest
-        });
-        dispatch(refreshPoolInfos());
-        setParentOpen(false);
+        dispatch(setProgressValue(0));
+        try {
+            const tx = changeAdminsTx({
+                poolID: objectID,
+                pendingAddList: getValidAddresses(pendingAddStr),
+                pendingRemoveList: getValidAddresses(pendingRemoveStr),
+            });
+            const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+            const res = await suiClient.signAndExecuteTransaction({
+                transaction: tx,
+                signer: keypair
+            });
+            dispatch(setProgressValue(randomTwentyFive()));
+            await suiClient.waitForTransaction({
+                digest: res.digest
+            });
+            dispatch(refreshPoolInfos());
+            let basicValue = 25;
+            const intervalTimer = setInterval(() => {
+                const targetValue = basicValue === 75 ? 100 : basicValue + randomTwentyFive();
+                basicValue += 25;
+                dispatch(setProgressValue(targetValue));
+                if (targetValue >= 100) {
+                    setParentOpen(false);
+                    clearInterval(intervalTimer);
+                }
+            }, 1000);
+        } catch (e) {
+            console.error(e);
+            dispatch(setProgressValue(100));
+        }
     }
 
     return (
