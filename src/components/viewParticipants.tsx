@@ -11,7 +11,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {ScrollArea} from "@/components/ui/scroll-area";
-import {editInfoTx, FieldInfoType, FieldType} from "@/lib/contracts";
+import {confirmListTx, editInfoTx, FieldInfoType, FieldType} from "@/lib/contracts";
 import {AppDispatch, useAppSelector} from "@/store";
 import {useEffect, useState} from "react";
 import {ParticipantsInfoDetail} from "@/components/index";
@@ -20,12 +20,14 @@ import {getPasskeyKeypair, suiClient} from "@/configs/networkConfig";
 import {useDispatch} from "react-redux";
 import {refreshPoolInfos} from "@/store/modules/info";
 
-export default function ViewParticipants({name, objectID, fields, participants, administrators}: {
+export default function ViewParticipants({name, objectID, fields, participants, administrators, hasConfirmed, minimumParticipants}: {
     name: string,
     objectID: string,
     fields: FieldType[],
     participants: FieldInfoType[],
-    administrators: string[]
+    administrators: string[],
+    hasConfirmed: string[]
+    minimumParticipants: number
 }) {
     const account = useAppSelector(state => state.info.address);
     const publicKeyStr = useAppSelector(state => state.info.publicKeyStr);
@@ -41,6 +43,8 @@ export default function ViewParticipants({name, objectID, fields, participants, 
         keysList: [],
         valuesList: []
     });
+    const [confirmListNow, setConfirmListNow] = useState<boolean>(false);
+    const [canDraw, setCanDraw] = useState<boolean>(false);
 
     useEffect(() => {
         setIsAdmin(administrators.includes(account));
@@ -49,7 +53,9 @@ export default function ViewParticipants({name, objectID, fields, participants, 
             keysList: [],
             valuesList: []
         });
-    }, [account, administrators]);
+        setConfirmListNow(false);
+        setCanDraw(hasConfirmed.length >= Math.floor((administrators.length + 1) / 2));
+    }, [account, administrators, hasConfirmed]);
 
     const editList = (index: number, keys: string[], values: string[], isAdd: boolean) => {
         if (isAdd) {
@@ -96,6 +102,25 @@ export default function ViewParticipants({name, objectID, fields, participants, 
         setOpen(false);
     }
 
+    const handleConfirmList = async () => {
+        const tx = confirmListTx({
+            poolID: objectID
+        });
+        const keypair = getPasskeyKeypair(window.location.hostname, publicKeyStr)
+        const res = await suiClient.signAndExecuteTransaction({
+            transaction: tx,
+            signer: keypair
+        });
+        await suiClient.waitForTransaction({
+            digest: res.digest
+        });
+        setConfirmListNow(true);
+        setCanDraw(hasConfirmed.length + 1 >= Math.floor((administrators.length + 1) / 2));
+    }
+
+    const handleDraw = async () => {
+    }
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -132,13 +157,17 @@ export default function ViewParticipants({name, objectID, fields, participants, 
                 <DialogFooter className="flex gap-3 items-center">
                     {
                         editContentsList.indexList.length > 0 &&
-                        <Button variant="default" className="cursor-pointer" onClick={handleEdit}>Edit</Button>
+                        <Button variant="default" className="cursor-pointer" onClick={handleEdit}>Confirm Edit</Button>
                     }
                     {
                         isAdmin &&
                         <>
-                            <Button variant="default" className="cursor-pointer">Confirm</Button>
-                            <Button variant="default" className="cursor-pointer">Lottery Draw</Button>
+                            <Button variant="default" className="cursor-pointer" onClick={handleConfirmList}
+                                    disabled={confirmListNow || hasConfirmed.includes(account) || participants.length === 0 || participants.length < minimumParticipants}>
+                                Confirm List
+                                <span className="text-xs text-[#afb3b5]">({hasConfirmed.length + (confirmListNow ? 1 : 0)} / {administrators.length})</span>
+                            </Button>
+                            <Button variant="default" className="cursor-pointer" onClick={handleDraw} disabled={!canDraw}>Lottery Draw</Button>
                         </>
                     }
                 </DialogFooter>

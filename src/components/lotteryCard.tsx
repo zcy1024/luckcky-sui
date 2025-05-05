@@ -25,7 +25,7 @@ export default function LotteryCard({info, isOdd}: {info: PoolInfoType, isOdd: b
             <div className="flex flex-col justify-end items-end gap-1 h-full">
                 <Apply name={info.name} objectID={info.id} fields={info.fields} />
                 <ViewApplication name={info.name} objectID={info.id} fields={info.fields} applications={info.application} administrators={info.admins} />
-                <ViewParticipants name={info.name} objectID={info.id} fields={info.fields} participants={info.pool} administrators={info.admins} />
+                <ViewParticipants name={info.name} objectID={info.id} fields={info.fields} participants={info.pool} administrators={info.admins} hasConfirmed={info.confirmed} minimumParticipants={info.minimumParticipants} />
             </div>
         </div>
     );

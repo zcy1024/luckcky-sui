@@ -38,7 +38,7 @@ type InitPoolInfoType = {
             }
         },
         admins: string[]
-        confirmed: [],
+        confirmed: string[],
         ended: boolean
     }
 }
@@ -88,7 +88,7 @@ export type PoolInfoType = {
     application: FieldInfoType[],
     pool: FieldInfoType[],
     admins: string[],
-    confirmed: [],
+    confirmed: string[],
     ended: boolean
 }
 

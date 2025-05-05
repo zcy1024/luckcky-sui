@@ -7,6 +7,7 @@ import decrypt, {isNeedEncryption} from "@/lib/contracts/decrypt";
 import {editApplicationTx} from "@/lib/contracts/editApplicationTx";
 import {changeAdminsTx} from "@/lib/contracts/changeAdminsTx";
 import editInfoTx from "@/lib/contracts/editInfoTx";
+import {confirmListTx} from "@/lib/contracts/confirmListTx";
 
 export type {
     FieldType,
@@ -25,4 +26,5 @@ export {
     editApplicationTx,
     changeAdminsTx,
     editInfoTx,
+    confirmListTx,
 }
