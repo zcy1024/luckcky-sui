@@ -167,7 +167,7 @@ async function getPool(id: string): Promise<PoolInfoType> {
         application: (await getTableFields(initInfo.fields.application.fields.id.id, null)).sort((field1, field2) => field1.index > field2.index ? -1 : 1),
         pool: (await getTableFields(initInfo.fields.pool.fields.id.id, null)).sort((field1, field2) => field1.index < field2.index ? -1 : 1),
         admins: initInfo.fields.admins,
-        confirmed: [],
+        confirmed: initInfo.fields.confirmed,
         ended: initInfo.fields.ended
     };
 }
