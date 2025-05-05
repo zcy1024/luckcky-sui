@@ -4,7 +4,7 @@ import {createSlice, ThunkDispatch, UnknownAction} from "@reduxjs/toolkit";
 import {Dispatch} from "react";
 import {PasskeyKeypair} from "@mysten/sui/keypairs/passkey";
 import {getPasskeyProvider} from "@/configs/networkConfig";
-import {getBalance, getPoolInfo, PoolInfoType} from "@/lib/contracts";
+import {getBalance, getPoolInfo, PoolInfoType, WinnerEventType} from "@/lib/contracts";
 
 export type initialStateType = {
     address: string,
@@ -12,6 +12,7 @@ export type initialStateType = {
     publicKeyStr: string,
     poolInfos: PoolInfoType[],
     endedPoolInfos: PoolInfoType[],
+    winnerEvents: WinnerEventType[],
     navTab: string,
 }
 
@@ -21,6 +22,7 @@ const initialState: initialStateType = {
     publicKeyStr: "",
     poolInfos: [],
     endedPoolInfos: [],
+    winnerEvents: [],
     navTab: "Main"
 }
 
@@ -37,9 +39,10 @@ const infoStore = createSlice({
         setPublicKeyStr(state, action: {payload: string}) {
             state.publicKeyStr = action.payload;
         },
-        setPoolInfos(state, action: {payload: [PoolInfoType[], PoolInfoType[]]}) {
+        setPoolInfos(state, action: {payload: [PoolInfoType[], PoolInfoType[], WinnerEventType[]]}) {
             state.poolInfos = action.payload[0];
             state.endedPoolInfos = action.payload[1];
+            state.winnerEvents = action.payload[2];
         },
         setNavTab(state, action: {payload: string}) {
             state.navTab = action.payload;

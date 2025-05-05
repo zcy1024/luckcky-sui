@@ -76,6 +76,12 @@ export type FieldInfoType = {
     sender: string
 }
 
+export type WinnerEventType = {
+    poolID: string,
+    winners: number[],
+    LotteryDrawingTime: string
+}
+
 export type PoolInfoType = {
     id: string,
     name: string,
@@ -103,6 +109,26 @@ async function getPoolIDs(cursor: EventId | null | undefined): Promise<string[]>
         pool_id: string
     }).pool_id);
     return !data.hasNextPage ? ids : ids.concat(await getPoolIDs(data.nextCursor));
+}
+
+async function getEndedEvents(cursor: EventId | null | undefined): Promise<WinnerEventType[]> {
+    const data = await suiClient.queryEvents({
+        query: {
+            MoveEventType: `${networkConfig[network].variables.Package}::lucky::WinnersEvent`
+        },
+        cursor
+    });
+    const events = data.data.map(event => (event.parsedJson as {
+        pool_id: string,
+        winners_list: string,
+        time: string
+    }));
+    const winnerEvents: WinnerEventType[] = events.map(event => ({
+        poolID: event.pool_id,
+        winners: event.winners_list.split(' ').map(id => Number(id)),
+        LotteryDrawingTime: timeExchange(event.time)
+    }));
+    return !data.hasNextPage ? winnerEvents : winnerEvents.concat(await getEndedEvents(data.nextCursor));
 }
 
 async function getFieldInfo(id: string): Promise<[string[], string[]]> {
@@ -172,8 +198,9 @@ async function getPool(id: string): Promise<PoolInfoType> {
     };
 }
 
-export default async function getPoolInfo(): Promise<[PoolInfoType[], PoolInfoType[]]> {
+export default async function getPoolInfo(): Promise<[PoolInfoType[], PoolInfoType[], WinnerEventType[]]> {
     const poolIDs = await getPoolIDs(null);
+    const winnerEvents = await getEndedEvents(null);
     const infos: PoolInfoType[] = [];
     const endInfos: PoolInfoType[] = [];
     for (let i = 0; i < poolIDs.length; i++) {
@@ -183,5 +210,8 @@ export default async function getPoolInfo(): Promise<[PoolInfoType[], PoolInfoTy
         else
             endInfos.push(info);
     }
-    return [infos, endInfos];
+    return [infos, endInfos.sort((info1, info2) =>
+        winnerEvents.find(event => event.poolID === info1.id)!.LotteryDrawingTime >
+        winnerEvents.find(event => event.poolID === info2.id)!.LotteryDrawingTime ? -1 : 1
+    ), winnerEvents];
 }

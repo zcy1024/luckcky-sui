@@ -8,6 +8,8 @@ import InfoDetail from "@/components/infoDetail";
 import AdminManager from "@/components/adminManager";
 import ViewParticipants from "@/components/viewParticipants";
 import ParticipantsInfoDetail from "@/components/participantsInfoDetail";
+import ShowWinners from "@/components/showWinners";
+import WinnerInfoDetail from "@/components/winnerInfoDetail";
 
 export {
     Navigation,
@@ -20,4 +22,6 @@ export {
     AdminManager,
     ViewParticipants,
     ParticipantsInfoDetail,
+    ShowWinners,
+    WinnerInfoDetail,
 }

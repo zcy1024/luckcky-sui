@@ -1,6 +1,6 @@
 import getBalance from "@/lib/contracts/getBalance";
 import {createPoolTx} from "@/lib/contracts/createPoolTx";
-import getPoolInfo, {FieldType, PoolInfoType, FieldInfoType} from "@/lib/contracts/getPoolInfo";
+import getPoolInfo, {FieldType, PoolInfoType, FieldInfoType, WinnerEventType} from "@/lib/contracts/getPoolInfo";
 import {applyTx} from "@/lib/contracts/applyTx";
 import encrypt from "@/lib/contracts/encrypt";
 import decrypt, {isNeedEncryption} from "@/lib/contracts/decrypt";
@@ -14,6 +14,7 @@ export type {
     FieldType,
     PoolInfoType,
     FieldInfoType,
+    WinnerEventType
 }
 
 export {
