@@ -167,7 +167,7 @@ export default function ParticipantsInfoDetail({objectID, fields, participant, i
                     }
                     {
                         isAdmin &&
-                        <Button variant="default" className="cursor-pointer" onClick={handleClickEdit} disabled={!decrypted || confirmedEdit}>{!isEditing ? "Edit" : (!confirmedEdit ? "Save" : "Confirmed")}</Button>
+                        <Button variant="default" className="cursor-pointer" onClick={handleClickEdit} disabled={!decrypted && needEncryption || confirmedEdit || fields.length === 0}>{!isEditing ? "Edit" : (!confirmedEdit ? "Save" : "Confirmed")}</Button>
                     }
                     {
                         isAdmin && needEncryption &&
