@@ -58,9 +58,11 @@ function getPasskeyKeypair(rpId: string, publicKeyStr: string) {
 }
 
 const sealClient = new SealClient({
-    // @ts-expect-error: Type error due to software package issues
     suiClient,
-    serverObjectIds: getAllowlistedKeyServers(network),
+    serverConfigs: getAllowlistedKeyServers(network).map((id) => ({
+        objectId: id,
+        weight: 1,
+    })),
     verifyKeyServers: false,
 });
 
@@ -73,10 +75,11 @@ async function getSessionKey(rpId: string, publicKeyStr: string) {
     if (sessionKey && !sessionKey.isExpired() && sessionKey.getAddress() === address)
         return sessionKey;
     // new session
-    sessionKey = new SessionKey({
+    sessionKey = await SessionKey.create({
         address,
         packageId: networkConfig[network].variables.Package,
-        ttlMin: 30
+        ttlMin: 30,
+        suiClient
     });
     // get message
     const message = sessionKey.getPersonalMessage();
